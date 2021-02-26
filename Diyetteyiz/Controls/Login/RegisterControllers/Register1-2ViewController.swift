@@ -1,13 +1,13 @@
 //
-//  RegisterViewController.swift
+//  Register1-2ViewController.swift
 //  Diyetteyiz
 //
-//  Created by Nizamet Özkan on 24.02.2021.
+//  Created by Nizamet Özkan on 26.02.2021.
 //
 
 import UIKit
 
-class RegisterViewController: UIViewController {
+class Register1_2ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

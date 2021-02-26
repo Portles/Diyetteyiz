@@ -7,17 +7,11 @@
 
 import UIKit
 import JGProgressHUD
+import FirebaseAuth
 
 class LoginViewController: UIViewController {
 
     private let spinner = JGProgressHUD(style: .dark)
-    
-    private let scrollView: UIScrollView = {
-       let scrollView = UIScrollView()
-        scrollView.clipsToBounds = true
-        scrollView.backgroundColor = .systemBackground
-        return scrollView
-    }()
     
     private let emailField: UITextField = {
         let field = UITextField()
@@ -101,52 +95,171 @@ class LoginViewController: UIViewController {
     
     private let warnLabel: UILabel = {
         let label = UILabel()
-        label.isHidden = false
+        label.isHidden = true
         label.text = "Uga Buga"
         label.textAlignment = .center
         label.textColor = .systemRed
         return label
     }()
     
+    private let headerView: UIView = {
+        let header = UIView()
+        header.layer.masksToBounds = true
+        let backgoundImageView = UIImageView(image: UIImage(named: "upperimage"))
+        header.addSubview(backgoundImageView)
+        header.layer.zPosition = -1
+        return header
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.addSubview(scrollView)
         
-        scrollView.addSubview(headerLabel)
-        scrollView.addSubview(headerInfoLabel)
-        scrollView.addSubview(emailField)
-        scrollView.addSubview(passField)
+        view.addSubview(headerLabel)
+        view.addSubview(headerInfoLabel)
+        view.addSubview(emailField)
+        view.addSubview(passField)
         
-        scrollView.addSubview(logButton)
+        view.addSubview(logButton)
         
-        scrollView.addSubview(forgotPassButton)
-        scrollView.addSubview(warnLabel)
+        view.addSubview(forgotPassButton)
+        view.addSubview(warnLabel)
         
-        scrollView.addSubview(regButton)
+        view.addSubview(regButton)
         
-        scrollView.addSubview(dietitianRegButton)
+        view.addSubview(dietitianRegButton)
         
+        view.addSubview(headerView)
+        
+        logButton.addTarget(self, action: #selector(didTapLogButton), for: .touchUpInside)
+        forgotPassButton.addTarget(self, action: #selector(didTapforgotPassButton), for: .touchUpInside)
+        regButton.addTarget(self, action: #selector(didTapregButton), for: .touchUpInside)
+        dietitianRegButton.addTarget(self, action: #selector(didTapdietitianRegButton), for: .touchUpInside)
+        
+        
+        view.backgroundColor = .systemBackground
+        
+        
+    }
+    
+    private func configureHeaderView(){
+        guard headerView.subviews.count == 1 else{
+            return
+        }
+        guard let backgoundView = headerView.subviews.first else {
+            return
+        }
+        backgoundView.frame = headerView.bounds
+        
+        backgoundView.layer.zPosition = 1
+    }
+    
+    @objc private func didTapLogButton() {
+        emailField.resignFirstResponder()
+        passField.resignFirstResponder()
+        
+        guard let email = emailField.text, let pass = passField.text,
+        !email.isEmpty, !pass.isEmpty, pass.count >= 6 else {
+            alertLogError()
+            return
+        }
+        
+        spinner.show(in: view)
+        
+        FirebaseAuth.Auth.auth().signIn(withEmail: email, password: pass, completion: {[weak self]authResult, error in
+            guard let strongSelf = self else{
+                return
+            }
+            
+            DispatchQueue.main.async {
+                strongSelf.spinner.dismiss()
+            }
+            
+            guard let result = authResult, error == nil else {
+                print("Hatalı giriş: \(email)")
+                return
+            }
+            let user = result.user
+            
+            let safmeail = DatabaseManager.safeEmail(emailAdress: email)
+            DatabaseManager.shared.getDataFor(path: safmeail, comletion: { result in
+                switch result {
+                case .success(let data):
+                    guard let userData = data as? [String: Any],
+                        let name = userData["name"] as? String else {
+                        return
+                    }
+                    UserDefaults.standard.set("\(name)", forKey: "name")
+                case .failure(let error):
+                    print("Data okunamadı: \(error)")
+                }
+            })
+            
+            UserDefaults.standard.set(email, forKey: "email")
+            
+            print("Giriş başarılı. \(user)")
+            strongSelf.navigationController?.dismiss(animated: true, completion: nil)
+        })
+    }
+    
+    private func alertLogError() {
+        let alert = UIAlertController(title: "OH", message: "Lütfen email ile şifrenizin doğruluğunu kontrol edin.", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Boşver", style: .cancel, handler: nil))
+        
+        present(alert, animated: true)
+    }
+    
+    @objc private func didTapforgotPassButton() {
+        let navVc = ForgotPasswordViewController()
+        navigationController?.pushViewController(navVc, animated: true)
+    }
+    
+    @objc private func didTapregButton() {
+        
+    }
+    
+    @objc private func didTapdietitianRegButton() {
+        let navVc = DietitianRegisterViewController()
+        navigationController?.pushViewController(navVc, animated: true)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        scrollView.frame = view.bounds
         
-        headerLabel.frame = CGRect(x: 30, y: scrollView.top+20, width: 200, height: 20)
-        headerInfoLabel.frame = CGRect(x: 30, y: headerLabel.bottom + 10, width: scrollView.width/2, height: 60)
-        emailField.frame = CGRect(x: 30, y: headerInfoLabel.bottom + 40, width: scrollView.width-60, height: 52)
-        passField.frame = CGRect(x: 30, y: emailField.bottom+30, width: scrollView.width-60, height: 52)
+        headerView.frame = CGRect(x: 0, y: 0.0, width: view.width, height: view.height/4.0)
         
-        logButton.frame = CGRect(x: 30, y: passField.bottom+40, width: scrollView.width-60, height: 52)
+        headerLabel.frame = CGRect(x: 30, y: view.top+100, width: 200, height: 20)
+        headerInfoLabel.frame = CGRect(x: 30, y: headerLabel.bottom + 10, width: view.width/2, height: 60)
+        emailField.frame = CGRect(x: 30, y: headerInfoLabel.bottom + 30, width: view.width-60, height: 52)
+        passField.frame = CGRect(x: 30, y: emailField.bottom+30, width: view.width-60, height: 52)
+        
+        logButton.frame = CGRect(x: 30, y: passField.bottom+40, width: view.width-60, height: 52)
         let warnLabelWidth = CGFloat(100)
         
-        forgotPassButton.frame = CGRect(x: (scrollView.width/2) - (75), y: logButton.bottom+20, width: 150, height: 20)
+        forgotPassButton.frame = CGRect(x: (view.width/2) - (75), y: logButton.bottom+10, width: 150, height: 20)
         
-        warnLabel.frame = CGRect(x: (scrollView.width/2) - (warnLabelWidth/2), y: forgotPassButton.bottom+10, width: warnLabelWidth, height: warnLabelWidth)
+        warnLabel.frame = CGRect(x: (view.width/2) - (warnLabelWidth/2), y: forgotPassButton.bottom+10, width: warnLabelWidth, height: warnLabelWidth)
         
         
-        regButton.frame = CGRect(x: 30, y: warnLabel.bottom+80, width: scrollView.width-60, height: 52)
+        regButton.frame = CGRect(x: 30, y: warnLabel.bottom+20, width: view.width-60, height: 52)
         dietitianRegButton.frame = CGRect(x: 30, y: regButton.bottom+10, width: 150, height: 20)
+        
+        configureHeaderView()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+        self.navigationController?.interactivePopGestureRecognizer?.delegate = self
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
+}
 
+extension LoginViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return false
+    }
 }

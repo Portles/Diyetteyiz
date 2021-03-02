@@ -6,12 +6,14 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class ForgotPasswordViewController: UIViewController {
     
     private let headerLabel: UILabel = {
         let label = UILabel()
         label.text = "Şifremi unuttum?"
+        label.font = UIFont.systemFont(ofSize: 24.0)
         label.textAlignment = .center
         return label
     }()
@@ -19,6 +21,7 @@ class ForgotPasswordViewController: UIViewController {
     private let headerInfoLabel: UILabel = {
         let label = UILabel()
         label.text = "Emailiniz girerek şifrenizi sıfırlama e-postasını alın."
+        label.font = UIFont.systemFont(ofSize: 20.0)
         label.textAlignment = .center
         label.numberOfLines = 3
         return label
@@ -77,11 +80,37 @@ class ForgotPasswordViewController: UIViewController {
         view.addSubview(sendButton)
         view.addSubview(warnLabel)
         view.addSubview(headerView)
+        
+        sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
+        
         view.backgroundColor = .systemBackground
         
         navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
     
+    @objc private func didTapSendButton() {
+        guard let email = emailField.text, !email.isEmpty, email.count > 5 else {
+            ForgotPassAlet()
+            return
+        }
+        Auth.auth().sendPasswordReset(withEmail: email) { error in
+            guard error == nil else {
+                self.warnLabel.isHidden = false
+                self.warnLabel.text = "Böyle bir email sistemde yok."
+                print("Böyle bir email yok.")
+                return
+            }
+            self.warnLabel.isHidden = false
+            self.warnLabel.text = "E-postanız gönderildi. 👍"
+        }
+    }
+    
+    private func ForgotPassAlet() {
+        let alert = UIAlertController(title: "E-posta", message: "E postanızı doğru yazıp tekrar deneyiniz.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Çıkış", style: .destructive, handler: nil))
+        
+        present(alert, animated: true, completion: nil)
+    }
     
     private func configureHeaderView(){
         guard headerView.subviews.count == 1 else{
@@ -103,7 +132,7 @@ class ForgotPasswordViewController: UIViewController {
         headerInfoLabel.frame = CGRect(x: (view.width/2)-100, y: headerLabel.bottom + 20, width: 200, height: 80)
         emailField.frame = CGRect(x: 30, y: headerInfoLabel.bottom+40, width: view.width-60, height: 52)
         sendButton.frame = CGRect(x: 30, y: emailField.bottom+50, width: view.width-60, height: 52)
-        warnLabel.frame = CGRect(x: (view.width/2)-100, y: sendButton.bottom + 20, width: 200, height: 80)
+        warnLabel.frame = CGRect(x: (view.width/2)-200, y: sendButton.bottom + 20, width: 400, height: 80)
         
         configureHeaderView()
     }

@@ -76,12 +76,14 @@ class LoginViewController: UIViewController {
     private let headerLabel: UILabel = {
         let label = UILabel()
         label.text = "Hoşgeldiniz"
+        label.font = UIFont.systemFont(ofSize: 24.0)
         return label
     }()
     
     private let headerInfoLabel: UILabel = {
         let label = UILabel()
         label.text = "Türkiyenin 1# numaralı diyet platformu."
+        label.font = UIFont.systemFont(ofSize: 20.0)
         label.numberOfLines = 2
         return label
     }()
@@ -138,7 +140,15 @@ class LoginViewController: UIViewController {
         
         view.backgroundColor = .systemBackground
         
-        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+
+        tap.cancelsTouchesInView = false
+
+        view.addGestureRecognizer(tap)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     private func configureHeaderView(){
@@ -215,7 +225,8 @@ class LoginViewController: UIViewController {
     }
     
     @objc private func didTapregButton() {
-        
+        let navVc = Register1_0ViewController()
+        navigationController?.pushViewController(navVc, animated: true)
     }
     
     @objc private func didTapdietitianRegButton() {

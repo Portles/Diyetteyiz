@@ -59,7 +59,7 @@ extension DatabaseManager {
         })
     }
     
-    public func InsertUser(with user: User, completion: @escaping (Bool) -> Void){
+    public func InsertUser(with user: DiyetteyizUser, completion: @escaping (Bool) -> Void){
         database.child(user.safeEmail).setValue([
             "name": user.name
             ], withCompletionBlock: { [weak self]error, _ in
@@ -124,7 +124,7 @@ extension DatabaseManager {
     }
 }
 
-struct User {
+struct DiyetteyizUser {
     let name: String
     let surname: String
     let email: String

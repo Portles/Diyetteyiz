@@ -13,6 +13,7 @@ class DietitianRegisterViewController: UIViewController {
     private let headerLabel: UILabel = {
         let label = UILabel()
         label.text = "Aramıza Katıl!"
+        label.font = UIFont.systemFont(ofSize: 24.0)
         label.textAlignment = .center
         return label
     }()
@@ -20,6 +21,7 @@ class DietitianRegisterViewController: UIViewController {
     private let headerInfoLabel: UILabel = {
         let label = UILabel()
         label.text = "Aramıza katılmak için başvuru metnini doldurun."
+        label.font = UIFont.systemFont(ofSize: 20.0)
         label.textAlignment = .center
         label.numberOfLines = 3
         return label

@@ -199,6 +199,7 @@ class LoginViewController: UIViewController {
                         return
                     }
                     UserDefaults.standard.set("\(name)", forKey: "name")
+                    UserDefaults.standard.setValue("\(email)", forKey: "email")
                 case .failure(let error):
                     print("Data okunamadı: \(error)")
                 }
@@ -207,6 +208,7 @@ class LoginViewController: UIViewController {
             UserDefaults.standard.set(email, forKey: "email")
             
             print("Giriş başarılı. \(user)")
+            
             strongSelf.navigationController?.dismiss(animated: true, completion: nil)
         })
     }

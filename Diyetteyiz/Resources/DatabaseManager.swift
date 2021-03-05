@@ -16,7 +16,12 @@ final class DatabaseManager {
     
     static func safeEmail(emailAdress: String) -> String {
         var safeEmail = emailAdress.replacingOccurrences(of: ".", with: "-")
-        safeEmail = safeEmail.replacingOccurrences(of: "@", with: "-")
+        safeEmail = safeEmail.replacingOccurrences(of: "@", with: "_")
+        return safeEmail
+    }
+    static func notSafeEmail(emailAdress: String) -> String {
+        var safeEmail = emailAdress.replacingOccurrences(of: "-", with: ".")
+        safeEmail = safeEmail.replacingOccurrences(of: "_", with: "@")
         return safeEmail
     }
 }
@@ -77,6 +82,7 @@ extension DatabaseManager {
                 strongSelf.database.child("users").observeSingleEvent(of: .value, with: { [weak self]snapshot in
                     if var userCollection = snapshot.value as? [[String: Any]] {
                         let newElement = [
+                            "ppUrl": user.ppUrl,
                             "name": user.name ,
                             "surname": user.surname ,
                             "email": user.safeEmail,
@@ -100,6 +106,7 @@ extension DatabaseManager {
                     } else {
                         let newCollection: [[String: Any]] = [
                             [
+                                "ppUrl": user.ppUrl,
                                 "name": user.name ,
                                 "surname": user.surname ,
                                 "email": user.safeEmail,
@@ -122,9 +129,19 @@ extension DatabaseManager {
                 })
         })
     }
+    public func getAllUsers(completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
+        database.child("users").observeSingleEvent(of: .value, with: { snapshot in
+            guard let value = snapshot.value as? [[String: Any]] else {
+                completion(.failure(DatabaseError.dataCekmeHatasi))
+                return
+            }
+            completion(.success(value))
+        })
+    }
 }
 
 struct DiyetteyizUser {
+    let ppUrl: URL
     let name: String
     let surname: String
     let email: String

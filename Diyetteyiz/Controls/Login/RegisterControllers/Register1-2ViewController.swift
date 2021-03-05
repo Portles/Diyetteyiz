@@ -250,7 +250,7 @@ class Register1_2ViewController: UIViewController {
                 UserDefaults.standard.set(surname, forKey: "surname")
                 UserDefaults.standard.set(email, forKey: "email")
                 
-                let user = DiyetteyizUser(name: name, surname: surname, email: email, gender: gender, fat: fat, height: height, isPersonalInfoHidden: isPersonalInfoHidden, isCheckedLegal: isCheckedLegal)
+                let user = DiyetteyizUser(ppUrl: URL(string: "")! ,name: name, surname: surname, email: email, gender: gender, fat: fat, height: height, isPersonalInfoHidden: isPersonalInfoHidden, isCheckedLegal: isCheckedLegal)
                 
                 DatabaseManager.shared.InsertUser(with: user, completion: { succes in
                     if succes {

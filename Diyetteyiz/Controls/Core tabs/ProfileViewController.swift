@@ -18,6 +18,14 @@ struct ProfileViewModel {
     let gender: String?
 }
 
+struct DietitianViewModel {
+    let name: String?
+    let surname: String?
+    let bio: String?
+    let starRate: Double?
+    let gender: String?
+}
+
 class ProfileViewController: UIViewController {
     
     private var collectionView: UICollectionView?
@@ -26,9 +34,14 @@ class ProfileViewController: UIViewController {
     
     public var completion: ((ProfileViewModel) -> (Void))?
     
+    private var dietitianData = [DietitianViewModel]()
+    
+    public var dietitianCompletion: ((DietitianViewModel) -> (Void))?
+    
     private let spinner = JGProgressHUD(style: .dark)
     
     private var users = [[String: Any]]()
+    private var dietitians = [[String: Any]]()
     private var hasFetched = false
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -136,8 +149,19 @@ class ProfileViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        getUserData(query: UserDefaults.standard.string(forKey: "email") ?? "")
-        setDefaultProfilePic()
+        fillProfile()
+    }
+    
+    private func fillProfile() {
+        let email = UserDefaults.standard.string(forKey: "email") ?? ""
+        
+        if UserDefaults.standard.integer(forKey: "permission") == 1 {
+            getUserData(query: email)
+            setDefaultProfilePic()
+        } else {
+            getDietitianData(query: email)
+            setDefaultProfilePic()
+        }
     }
     
     private func setDefaultProfilePic() {
@@ -146,6 +170,57 @@ class ProfileViewController: UIViewController {
         } else {
             profilePhoto.image = UIImage(named: "manPic")
         }
+    }
+    
+    private func getDietitianData(query: String) {
+            dietitianData.removeAll()
+            if hasFetched {
+                filterDietitian(with: query)
+            }else{
+                DatabaseManager.shared.getAllDietitians(completion: { [weak self]result in
+                    switch result {
+                    case .success(let dietitianCollection):
+                        self?.hasFetched = true
+                        self?.dietitians = dietitianCollection
+                        self?.filterDietitian(with: query)
+                    case .failure(let error):
+                        print("Diyetisyen bilgilerine erişilemedi: \(error)")
+                    }
+                })
+            }
+    }
+    func filterDietitian(with term: String) {
+        guard let currentUserEmail = UserDefaults.standard.value(forKey: "email") as? String, hasFetched else {
+            return
+        }
+        
+        let safeMaille = DatabaseManager.safeEmail(emailAdress: currentUserEmail)
+        
+        let results: [DietitianViewModel] = dietitians.filter({
+            guard let email = $0["email"],
+                  email as! String == safeMaille else {
+                    return false
+            }
+            
+            return (email as AnyObject).hasPrefix(safeMaille.lowercased())
+        }).compactMap({
+            guard let name = $0["name"], let surName = $0["surname"], let starRate = $0["starRate"], let bio = $0["bio"], let gender = $0["gender"]  else {
+                return nil
+            }
+            
+            UserDefaults.standard.set(name, forKey: "name")
+            UserDefaults.standard.set(surName, forKey: "surname")
+            UserDefaults.standard.set(bio, forKey: "bio")
+            UserDefaults.standard.set(gender, forKey: "gender")
+            UserDefaults.standard.set(starRate, forKey: "starRate")
+            
+            return DietitianViewModel(name: name as? String, surname: surName as? String, bio: bio as? String, starRate: starRate as? Double, gender: gender as? String)
+        })
+        self.dietitianData = results
+
+        fullName.text = dietitianData[0].name! + " " + dietitianData[0].surname!
+        bio.text = dietitianData[0].bio
+        starRate.text = "Yıldız: " + String(dietitianData[0].starRate!) + "/5.0"
     }
     
     private func configureNavigationBar() {
@@ -210,6 +285,7 @@ class ProfileViewController: UIViewController {
         bio.text = data[0].bio
         starRate.text = "Yıldız: " + String(data[0].starRate!) + "/5.0"
     }
+
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -240,6 +316,7 @@ class ProfileViewController: UIViewController {
     }
 }
 
+
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 3
@@ -251,3 +328,4 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     
     
 }
+

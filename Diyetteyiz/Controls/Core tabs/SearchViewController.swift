@@ -31,6 +31,39 @@ class SearchViewController: UIViewController {
         return table
     }()
     
+    private let dietitianButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Dietitians", for: .normal)
+        button.backgroundColor = .systemGreen
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.layer.masksToBounds = true
+        button.titleLabel?.font = .systemFont(ofSize: 12, weight: .bold)
+        return button
+    }()
+    
+    private let userButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Users", for: .normal)
+        button.backgroundColor = .systemGreen
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.layer.masksToBounds = true
+        button.titleLabel?.font = .systemFont(ofSize: 12, weight: .bold)
+        return button
+    }()
+    
+    private let productsButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Menus", for: .normal)
+        button.backgroundColor = .systemGreen
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.layer.masksToBounds = true
+        button.titleLabel?.font = .systemFont(ofSize: 12, weight: .bold)
+        return button
+    }()
+    
     private let noResultLabel: UILabel = {
        let label = UILabel()
         label.isHidden = true
@@ -45,19 +78,71 @@ class SearchViewController: UIViewController {
         super.viewDidLoad()
         view.addSubview(noResultLabel)
         view.addSubview(tableView)
+        view.addSubview(dietitianButton)
+        view.addSubview(userButton)
+        view.addSubview(productsButton)
         tableView.delegate = self
         tableView.dataSource = self
         searchBar.delegate = self
+        dietitianButton.isSelected = true
+        dietitianButton.backgroundColor = .link
         view.backgroundColor = .systemBackground
         navigationController?.navigationBar.topItem?.titleView = searchBar
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "İptal", style: .done, target: self, action: #selector(dismissSelf))
+        dietitianButton.addTarget(self, action: #selector(didTapDietitianButton), for: .touchUpInside)
+        userButton.addTarget(self, action: #selector(didTapUsersButton), for: .touchUpInside)
+        productsButton.addTarget(self, action: #selector(didTapMenusButton), for: .touchUpInside)
         searchBar.becomeFirstResponder()
     }
+    
+    @objc private func didTapDietitianButton() {
+        dietitianButton.isSelected = true
+        dietitianButton.backgroundColor = .link
+        
+        userButton.isSelected = false
+        userButton.backgroundColor = .systemGreen
+        
+        productsButton.isSelected = false
+        productsButton.backgroundColor = .systemGreen
+        
+        hasFetched = false
+    }
+    
+    @objc private func didTapUsersButton() {
+        dietitianButton.isSelected = false
+        dietitianButton.backgroundColor = .systemGreen
+        
+        userButton.isSelected = true
+        userButton.backgroundColor = .link
+        
+        productsButton.isSelected = false
+        productsButton.backgroundColor = .systemGreen
+        
+        hasFetched = false
+    }
+    
+    @objc private func didTapMenusButton() {
+        dietitianButton.isSelected = false
+        dietitianButton.backgroundColor = .systemGreen
+        
+        userButton.isSelected = false
+        userButton.backgroundColor = .systemGreen
+        
+        productsButton.isSelected = true
+        productsButton.backgroundColor = .link
+        
+        hasFetched = false
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        tableView.frame = view.bounds
+        dietitianButton.frame = CGRect(x: 10, y: view.top + 120, width: view.width/3-10, height: 20)
+        userButton.frame = CGRect(x: dietitianButton.right + 5, y: view.top + 120, width: view.width/3-10, height: 20)
+        productsButton.frame = CGRect(x: userButton.right + 5, y: view.top + 120, width: view.width/3-10, height: 20)
+        tableView.frame = CGRect(x: 0, y: dietitianButton.bottom, width: view.width, height: view.height)
         noResultLabel.frame = CGRect(x: view.width/4, y: (view.height-200)/2, width: view.width/2, height: 200)
     }
+    
     @objc private func dismissSelf() {
         searchBar.text = ""
         searchBar.resignFirstResponder()
@@ -97,9 +182,33 @@ extension SearchViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
         
         results.removeAll()
-        spinner.show(in: view)
+        tableView.reloadData()
         
-        searchUsers(query: text)
+        spinner.show(in: view)
+        if userButton.isSelected {
+            searchUsers(query: text)
+            self.spinner.dismiss()
+        } else if dietitianButton.isSelected {
+            searchDietitians(query: text)
+            self.spinner.dismiss()
+        }
+        
+    }
+    func searchDietitians(query: String) {
+        if hasFetched {
+            filterUser(with: query)
+        }else{
+            DatabaseManager.shared.getAllDietitians(completion: { [weak self]result in
+                switch result {
+                case .success(let usersCollection):
+                    self?.hasFetched = true
+                    self?.users = usersCollection
+                    self?.filterUser(with: query)
+                case .failure(let error):
+                    print("Diyetisyen bilgilerine erişilemedi: \(error)")
+                }
+            })
+        }
     }
     func searchUsers(query: String) {
         if hasFetched {
@@ -124,8 +233,6 @@ extension SearchViewController: UISearchBarDelegate {
         
         let safeMaille = DatabaseManager.safeEmail(emailAdress: currentUserEmail)
         
-        self.spinner.dismiss()
-        
         let results: [SearchResult] = users.filter({
             guard let email = $0["email"], email as! String != safeMaille else {
                     return false
@@ -137,11 +244,11 @@ extension SearchViewController: UISearchBarDelegate {
             
             return name.hasPrefix(term.lowercased())
         }).compactMap({
-            guard let email = $0["email"] as? String, let name = $0["name"] as? String else {
+            guard let email = $0["email"] as? String, let name = $0["name"] as? String, let bio = $0["bio"] as? String else {
                 return nil
             }
             
-            return SearchResult(email: email, name: name, info: "", ppUrl: "")
+            return SearchResult(email: email, name: name, info: bio, ppUrl: "")
         })
         self.results = results
         

@@ -210,6 +210,8 @@ class LoginViewController: UIViewController {
             
             if email.contains("@diyetteyiz.com") {
                 UserDefaults.standard.setValue(2, forKey: "permission")
+            } else {
+                UserDefaults.standard.setValue(1, forKey: "permission")
             }
             
             print("Giriş başarılı. \(user)")

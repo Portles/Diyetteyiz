@@ -9,11 +9,13 @@ import UIKit
 import JGProgressHUD
 
 struct ProfileViewModel {
-    let profileUrl: URL?
     let name: String?
     let surname: String?
     let bio: String?
     let starRate: Double?
+    let height: String?
+    let fat: String?
+    let gender: String?
 }
 
 class ProfileViewController: UIViewController {
@@ -29,9 +31,19 @@ class ProfileViewController: UIViewController {
     private var users = [[String: Any]]()
     private var hasFetched = false
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        hasFetched = false
+    }
+    
     private let profilePhoto: UIImageView = {
         let photo = UIImageView()
         photo.image = UIImage(systemName: "person.circle")
+        photo.contentMode = .scaleAspectFill
+        photo.backgroundColor = .white
+        photo.layer.borderColor = UIColor.green.cgColor
+        photo.layer.borderWidth = 3
+        photo.layer.masksToBounds = true
         return photo
     }()
     
@@ -39,6 +51,7 @@ class ProfileViewController: UIViewController {
         let label = UILabel()
         label.text = "İsim"
         label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         return label
     }()
     
@@ -46,6 +59,7 @@ class ProfileViewController: UIViewController {
         let label = UILabel()
         label.text = "Bio"
         label.textAlignment = .center
+        label.numberOfLines = 3
         return label
     }()
     
@@ -79,6 +93,7 @@ class ProfileViewController: UIViewController {
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(DietitianProfileMenusTableViewCell.self, forCellReuseIdentifier: DietitianProfileMenusTableViewCell.identifier)
+        tableView.isHidden = true
         return tableView
     }()
     
@@ -93,11 +108,54 @@ class ProfileViewController: UIViewController {
         view.addSubview(bio)
         view.addSubview(starRate)
         view.addSubview(followButton)
+        view.addSubview(tableView)
         
-        //configureProfile()
-        getUserData(query: UserDefaults.standard.string(forKey: "email") ?? "")
+        if UserDefaults.standard.integer(forKey: "permission") == 2 {
+            tableView.isHidden = false
+            tableView.delegate = self
+            tableView.dataSource = self
+        }
+        
+        configureNavigationBar()
+        
+        
+        followButton.addTarget(self, action: #selector(didTapFollowButton), for: .touchUpInside)
         
         navigationItem.title = "Profil"
+    }
+    
+    @objc private func didTapFollowButton() {
+        if followButton.isSelected {
+            followButton.isSelected = false
+            followButton.backgroundColor = .systemBlue
+        } else {
+            followButton.isSelected = true
+            followButton.backgroundColor = .systemRed
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        getUserData(query: UserDefaults.standard.string(forKey: "email") ?? "")
+        setDefaultProfilePic()
+    }
+    
+    private func setDefaultProfilePic() {
+        if UserDefaults.standard.string(forKey: "gender") == "Female" {
+            profilePhoto.image = UIImage(named: "womanPic")
+        } else {
+            profilePhoto.image = UIImage(named: "manPic")
+        }
+    }
+    
+    private func configureNavigationBar() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .done, target: self, action: #selector(didTapSettingButton))
+    }
+    
+    @objc private func didTapSettingButton() {
+        let vc = ProfileSettingsViewController()
+        vc.title = "Settings"
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     private func getUserData(query: String) {
@@ -132,36 +190,39 @@ class ProfileViewController: UIViewController {
             
             return (email as AnyObject).hasPrefix(safeMaille.lowercased())
         }).compactMap({
-            guard let name = $0["name"], let surName = $0["surname"], let starRate = $0["starRate"], let bio = $0["bio"] else {
+            guard let name = $0["name"], let surName = $0["surname"], let starRate = $0["starRate"], let bio = $0["bio"], let fat = $0["fat"] ,let height = $0["height"], let gender = $0["gender"]  else {
                 return nil
             }
             
-            return ProfileViewModel(profileUrl: URL(string: ""), name: name as? String, surname: surName as? String, bio: bio as? String, starRate: starRate as? Double)
+            UserDefaults.standard.set(name, forKey: "name")
+            UserDefaults.standard.set(surName, forKey: "surname")
+            UserDefaults.standard.set(bio, forKey: "bio")
+            UserDefaults.standard.set(fat, forKey: "fat")
+            UserDefaults.standard.set(height, forKey: "height")
+            UserDefaults.standard.set(gender, forKey: "gender")
+            UserDefaults.standard.set(starRate, forKey: "starRate")
+            
+            return ProfileViewModel(name: name as? String, surname: surName as? String, bio: bio as? String, starRate: starRate as? Double, height: height as? String, fat: fat as? String, gender: gender as? String)
         })
         self.data = results
-        
+
         fullName.text = data[0].name! + " " + data[0].surname!
         bio.text = data[0].bio
-    }
-    
-    private func configureProfile() {
-        fullName.text = UserDefaults.standard.string(forKey: "name")
-        bio.text = UserDefaults.standard.string(forKey: "name")
+        starRate.text = "Yıldız: " + String(data[0].starRate!) + "/5.0"
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width+100, height: view.height/4.0)
         
-        let ppSize = view.width/4
         profilePhoto.frame = CGRect(x: (view.width/2)-100, y: view.top+150, width: 200, height: 200)
+        profilePhoto.layer.cornerRadius = profilePhoto.width/2
         
-        profilePhoto.layer.cornerRadius = ppSize/2.0
-        
-        fullName.frame = CGRect(x: (view.width/2)-((view.width-60)/2), y: profilePhoto.bottom + 20, width: view.width-60, height: 20)
-        bio.frame = CGRect(x: (view.width/2)-((view.width-60)/2), y: fullName.bottom + 5, width: view.width-60, height: 60)
+        fullName.frame = CGRect(x: (view.width/2)-((view.width-60)/2), y: profilePhoto.bottom + 20, width: view.width-60, height: 40)
+        bio.frame = CGRect(x: (view.width/2)-((view.width-60)/2), y: fullName.bottom + 5, width: view.width-60, height: 180)
         starRate.frame = CGRect(x: 30, y: bio.bottom + 10, width: 175, height: 52)
         followButton.frame = CGRect(x: starRate.right, y: bio.bottom + 10, width: 200, height: 52)
+        tableView.frame = CGRect(x: 0, y: followButton.bottom, width: view.width, height: 300)
         
         configureHeaderView()
     }
@@ -177,4 +238,16 @@ class ProfileViewController: UIViewController {
         
         backgoundView.layer.zPosition = 1
     }
+}
+
+extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 3
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return UITableViewCell()
+    }
+    
+    
 }

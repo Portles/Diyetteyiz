@@ -134,7 +134,7 @@ class Register1_2ViewController: UIViewController {
     
     private let radiobuttonLabel: UILabel = {
         let label = UILabel()
-        label.text = "Profilinizde gözüksün mü?"
+        label.text = "Şartları kabul ediyor musunuz?"
         label.textColor = .systemRed
         return label
     }()
@@ -220,7 +220,7 @@ class Register1_2ViewController: UIViewController {
         passField.resignFirstResponder()
         repassField.resignFirstResponder()
         
-        guard let gender=self.gender,let isPersonalInfoHidden = self.isPersonalInfoHidden ,let fat = self.fat ,let height = self.height ,let isCheckedLegal = self.isCheckedLegal ,let name=nameField.text, let surname=surnameField.text, let email=emailField.text, let pass=passField.text,let repass=repassField.text, pass == repass, !name.isEmpty, !surname.isEmpty, !email.isEmpty, !pass.isEmpty, !repass.isEmpty else {
+        guard let gender=self.gender ,let isPersonalInfoHidden = self.isPersonalInfoHidden ,let fat = self.fat ,let height = self.height ,let isCheckedLegal = self.isCheckedLegal ,let name=nameField.text, let surname=surnameField.text, let email=emailField.text, let pass=passField.text, let repass=repassField.text, pass == repass, !name.isEmpty, !surname.isEmpty, !email.isEmpty, !pass.isEmpty, !repass.isEmpty else {
             return
         }
         
@@ -250,7 +250,7 @@ class Register1_2ViewController: UIViewController {
                 UserDefaults.standard.set(surname, forKey: "surname")
                 UserDefaults.standard.set(email, forKey: "email")
                 
-                let user = DiyetteyizUser(ppUrl: URL(string: "")! ,name: name, surname: surname, email: email, gender: gender, fat: fat, height: height, isPersonalInfoHidden: isPersonalInfoHidden, isCheckedLegal: isCheckedLegal)
+                let user = DiyetteyizUser(name: name, surname: surname, email: email, gender: gender, fat: fat, height: height, isPersonalInfoHidden: isPersonalInfoHidden, isCheckedLegal: isCheckedLegal, starRate: 0.0, bio: "")
                 
                 DatabaseManager.shared.InsertUser(with: user, completion: { succes in
                     if succes {

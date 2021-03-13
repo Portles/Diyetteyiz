@@ -258,6 +258,82 @@ extension DatabaseManager {
         }
     }
     
+    public func updateDietitianProfile(with user: DiyetteyizUserModel,completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
+        let ref = database.child("dietitians")
+        ref.observeSingleEvent(of: .value) { snapshot in
+            if var users = snapshot.value as? [[String: Any]] {
+                var position = 0
+                let seyfMail = DatabaseManager.safeEmail(emailAdress: UserDefaults.standard.string(forKey: "email")!)
+                for conversation in users {
+                    if let seyfmeil = conversation["email"] as? String,
+                       seyfmeil == seyfMail {
+                        print("Silinecek konuşma bulundı")
+                        break
+                    }
+                    position += 1
+                }
+                users.remove(at: position)
+                ref.setValue(users, withCompletionBlock: { [weak self] error, _ in
+                    guard error == nil else {
+                        completion(.failure(DatabaseError.dataCekmeHatasi))
+                        return
+                    }
+                    print("Seçilen diyetisyen.")
+                    
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    
+                    strongSelf.database.child("dietitians").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                        
+                        if var userCollection = snapshot.value as? [[String: Any]] {
+                            let newElement = [
+                                "name": user.name! ,
+                                "surname": user.surname!,
+                                "email": user.safeEmail,
+                                "gender": user.gender!,
+                                "starRate": user.starRate! ,
+                                "bio": user.bio!
+                            ] as [String : Any]
+                            guard let strongSelf = self else {
+                                return
+                            }
+                            userCollection.append(newElement)
+                            strongSelf.database.child("dietitians").setValue(userCollection, withCompletionBlock: { error, _ in
+                                guard error == nil else {
+                                    completion(.failure(DatabaseError.dataCekmeHatasi))
+                                    return
+                                }
+                                completion(.success(users))
+                            })
+                        } else {
+                            let newCollection: [[String: Any]] = [
+                                [
+                                    "name": user.name! ,
+                                    "surname": user.surname!,
+                                    "email": user.safeEmail,
+                                    "gender": user.gender!,
+                                    "starRate": user.starRate! ,
+                                    "bio": user.bio!
+                                ]
+                            ]
+                            
+                            strongSelf.database.child("dietitians").setValue(newCollection, withCompletionBlock: { error, _ in
+                                guard error == nil else {
+                                    completion(.failure(DatabaseError.dataCekmeHatasi))
+                                    return
+                                }
+                                completion(.success(users))
+                            })
+                        }
+                    })
+                    
+                    completion(.success(users))
+                })
+            }
+        }
+    }
+    
     public func getAllUsers(completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
         database.child("users").observeSingleEvent(of: .value, with: { snapshot in
             guard let value = snapshot.value as? [[String: Any]] else {

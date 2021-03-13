@@ -51,6 +51,18 @@ class UserSearchTableViewCell: UITableViewCell {
     public func configure(with model: SearchResult) {
         userNameLabel.text = model.name
         
-        
+        let path = "img/\(DatabaseManager.notSafeEmail(emailAdress: model.email))_PP.png"
+        StorageManager.shared.downloadURL(for: path, completion: { [weak self]result in
+            switch result {
+            case .success(let url):
+                
+                DispatchQueue.main.async {
+                    self?.UserImageView.sd_setImage(with: url, completed: nil)
+                }
+                
+            case .failure(let error):
+                print("PP indirme linki alınamadı. \(error)")
+            }
+        })
     }
 }

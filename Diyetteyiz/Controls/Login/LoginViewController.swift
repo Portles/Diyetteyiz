@@ -200,19 +200,15 @@ class LoginViewController: UIViewController {
                     }
                     UserDefaults.standard.set("\(name)", forKey: "name")
                     UserDefaults.standard.setValue("\(email)", forKey: "email")
-                    UserDefaults.standard.setValue(1, forKey: "permission")
+                    if email.contains("@diyetteyiz.com") {
+                        UserDefaults.standard.setValue(2, forKey: "permission")
+                    } else {
+                        UserDefaults.standard.setValue(1, forKey: "permission")
+                    }
                 case .failure(let error):
                     print("Data okunamadı: \(error)")
                 }
             })
-            
-            UserDefaults.standard.set(email, forKey: "email")
-            
-            if email.contains("@diyetteyiz.com") {
-                UserDefaults.standard.setValue(2, forKey: "permission")
-            } else {
-                UserDefaults.standard.setValue(1, forKey: "permission")
-            }
             
             print("Giriş başarılı. \(user)")
             

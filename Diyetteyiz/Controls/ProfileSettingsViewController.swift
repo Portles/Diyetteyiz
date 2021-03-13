@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import SDWebImage
 
 struct DiyetteyizUserModel {
     let name: String?
@@ -28,6 +29,17 @@ struct DiyetteyizUserModel {
 }
 
 class ProfileSettingsViewController: UIViewController {
+    
+    private let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "person.circle")
+        imageView.tintColor = .gray
+        imageView.contentMode = .scaleAspectFit
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 3
+        imageView.layer.borderColor = UIColor.lightGray.cgColor
+        return imageView
+    }()
     
     private let nameField: UITextField = {
         let field = UITextField()
@@ -115,6 +127,7 @@ class ProfileSettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.addSubview(imageView)
         view.addSubview(nameField)
         view.addSubview(surnameField)
         view.addSubview(bioField)
@@ -124,24 +137,36 @@ class ProfileSettingsViewController: UIViewController {
         
         view.addSubview(headerView)
         
+        imageView.isUserInteractionEnabled = true
+        
         personalInfoSaveButton.addTarget(self, action: #selector(didTapUpdateInfoButton), for: .touchUpInside)
         sendPassEmail.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "power"), style: .done, target: self, action: #selector(didTapLogoutButton))
         
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(didTapChangeProfilePic))
+        imageView.addGestureRecognizer(gesture)
+        
         view.backgroundColor = .systemBackground
+    }
+    
+    @objc func didTapChangeProfilePic() {
+        presentPhotoActionSheet()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width+100, height: view.height/4.0)
         
-        nameField.frame = CGRect(x: 30, y: 200, width: view.width-60, height: 52)
+        let size = view.width/3
+        imageView.frame = CGRect(x: (view.width/3),y: 200,width: size,height: size)
+        imageView.layer.cornerRadius = imageView.width/2.0
+        nameField.frame = CGRect(x: 30, y: imageView.bottom + 10, width: view.width-60, height: 52)
         surnameField.frame = CGRect(x: 30, y: nameField.bottom + 10, width: view.width-60, height: 52)
         bioField.frame = CGRect(x: 30, y: surnameField.bottom + 10, width: view.width-60, height: 156)
         personalInfoSaveButton.frame = CGRect(x: 30, y: bioField.bottom + 10, width: view.width-60, height: 52)
         sendPassEmail.frame = CGRect(x: 30, y: personalInfoSaveButton.bottom + 40, width: view.width-60, height: 52)
-        warnLabel.frame = CGRect(x: (view.width/2)-200, y: sendPassEmail.bottom + 20, width: 400, height: 80)
+        warnLabel.frame = CGRect(x: (view.width/2)-200, y: sendPassEmail.bottom + 10, width: 400, height: 60)
         
         configureHeaderView()
     }
@@ -162,16 +187,57 @@ class ProfileSettingsViewController: UIViewController {
         
         let user = DiyetteyizUserModel(name: name, surname: surname, email: email, gender: gender, fat: fat, height: height, isPersonalInfoHidden: isPersonalInfoHidden, isCheckedLegal: isCheckedLegal, starRate: starRate, bio: bio)
         
-        DatabaseManager.shared.updateProfile(with: user, completion: { [weak self]result in
-            switch result {
-            case .success( _):
-                self?.warnLabel.isHidden = false
-                self?.warnLabel.text = "Güncelleme başarılı."
-                print("Update başarılı.")
-            case .failure(let error):
-                print("Kişi bilgilerine erişilemedi: \(error)")
-            }
-        })
+        if UserDefaults.standard.integer(forKey: "permission") == 1 {
+            DatabaseManager.shared.updateProfile(with: user, completion: { [weak self]result in
+                switch result {
+                case .success( _):
+                    self?.warnLabel.isHidden = false
+                    self?.warnLabel.text = "Güncelleme başarılı."
+                    print("Update başarılı.")
+                    guard let image = self?.imageView.image, let data = image.pngData() else {
+                    return
+                    }
+                    
+                    let fileName = "\(email)_PP.png"
+                    StorageManager.shared.uploadPP(with: data, fileName: fileName, completion: { result in
+                        switch result {
+                        case .success(let downloadURL):
+                            UserDefaults.standard.set(downloadURL, forKey: "pp_url")
+                            print(downloadURL)
+                        case .failure(let error):
+                            print("Data yönetimi hatası. \(error)")
+                        }
+                    })
+                case .failure(let error):
+                    print("Kişi bilgilerine erişilemedi: \(error)")
+                }
+            })
+        } else {
+            DatabaseManager.shared.updateDietitianProfile(with: user, completion: { [weak self]result in
+                switch result {
+                case .success( _):
+                    self?.warnLabel.isHidden = false
+                    self?.warnLabel.text = "Güncelleme başarılı."
+                    print("Update başarılı.")
+                    guard let image = self?.imageView.image, let data = image.pngData() else {
+                    return
+                    }
+                    
+                    let fileName = "\(email)_PP.png"
+                    StorageManager.shared.uploadPP(with: data, fileName: fileName, completion: { result in
+                        switch result {
+                        case .success(let downloadURL):
+                            UserDefaults.standard.set(downloadURL, forKey: "pp_url")
+                            print(downloadURL)
+                        case .failure(let error):
+                            print("Data yönetimi hatası. \(error)")
+                        }
+                    })
+                case .failure(let error):
+                    print("Kişi bilgilerine erişilemedi: \(error)")
+                }
+            })
+        }
     }
     
     @objc private func didTapSendButton() {
@@ -222,5 +288,48 @@ class ProfileSettingsViewController: UIViewController {
             print("Failed to log out")
         }
     }
+}
 
+extension ProfileSettingsViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func presentPhotoActionSheet() {
+        let actionSheet = UIAlertController(title: "Profil fotoğrafı seç", message: "Fotoğraf nerden alınsın?", preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "İptal", style: .cancel, handler: nil))
+        actionSheet.addAction(UIAlertAction(title: "Fotoğraf Çek", style: .default, handler: {[weak self]_ in
+            self?.presentCamera()
+            
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Fotoğraf Seç", style: .default, handler: {[weak self]_ in
+            self?.presentPhotoLib()
+        }))
+        present(actionSheet, animated: true)
+    }
+    
+    func presentCamera() {
+        let vc = UIImagePickerController()
+        vc.sourceType = .camera
+        vc.delegate = self
+        vc.allowsEditing = true
+        present(vc, animated: true)
+    }
+    
+    func presentPhotoLib() {
+        let vc = UIImagePickerController()
+        vc.sourceType = .photoLibrary
+        vc.delegate = self
+        vc.allowsEditing = true
+        present(vc, animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        guard let selectedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else{
+            return
+        }
+        self.imageView.image = selectedImage
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
 }

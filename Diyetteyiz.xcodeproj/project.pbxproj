@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C37C8BF994B76ADBB4D7B0E0 /* Pods_Diyetteyiz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0485CF657032CF729AF7E781 /* Pods_Diyetteyiz.framework */; };
+		CA21F04625FA3F06004EB39D /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA21F04525FA3F06004EB39D /* StorageManager.swift */; };
 		CA28FB0525E655820020FC32 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA28FB0425E655820020FC32 /* SearchViewController.swift */; };
 		CA28FB0A25E655920020FC32 /* ProductsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA28FB0925E655920020FC32 /* ProductsViewController.swift */; };
 		CA28FB0F25E6559B0020FC32 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA28FB0E25E6559B0020FC32 /* ProfileViewController.swift */; };
@@ -23,6 +24,7 @@
 		CA6C774B25E85ECE008E401E /* Register1-2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6C774A25E85ECE008E401E /* Register1-2ViewController.swift */; };
 		CA6C775025E85ED8008E401E /* Register1-3ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6C774F25E85ED8008E401E /* Register1-3ViewController.swift */; };
 		CAA7E19D25F40C4500281DC4 /* NotificationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA7E19C25F40C4500281DC4 /* NotificationTableViewCell.swift */; };
+		CAB2D6FD25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB2D6FC25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift */; };
 		CAB51DFE25F2DB76003DE670 /* NotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB51DFD25F2DB76003DE670 /* NotificationsViewController.swift */; };
 		CAB8922025EAD5F1005F08E1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CAB8921F25EAD5F1005F08E1 /* GoogleService-Info.plist */; };
 		CAB8D11125E64A1C00601803 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB8D11025E64A1C00601803 /* AppDelegate.swift */; };
@@ -64,6 +66,7 @@
 		70C5F4112F9DC4AE535C7982 /* Pods-DiyetteyizTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DiyetteyizTests.release.xcconfig"; path = "Target Support Files/Pods-DiyetteyizTests/Pods-DiyetteyizTests.release.xcconfig"; sourceTree = "<group>"; };
 		8819766F853BD34843DB4314 /* Pods-Diyetteyiz-DiyetteyizUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Diyetteyiz-DiyetteyizUITests.release.xcconfig"; path = "Target Support Files/Pods-Diyetteyiz-DiyetteyizUITests/Pods-Diyetteyiz-DiyetteyizUITests.release.xcconfig"; sourceTree = "<group>"; };
 		93976C255CA4A2C7B85620FB /* Pods-Diyetteyiz-DiyetteyizUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Diyetteyiz-DiyetteyizUITests.debug.xcconfig"; path = "Target Support Files/Pods-Diyetteyiz-DiyetteyizUITests/Pods-Diyetteyiz-DiyetteyizUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		CA21F04525FA3F06004EB39D /* StorageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		CA28FB0425E655820020FC32 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		CA28FB0925E655920020FC32 /* ProductsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsViewController.swift; sourceTree = "<group>"; };
 		CA28FB0E25E6559B0020FC32 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
@@ -79,6 +82,7 @@
 		CA6C774A25E85ECE008E401E /* Register1-2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Register1-2ViewController.swift"; sourceTree = "<group>"; };
 		CA6C774F25E85ED8008E401E /* Register1-3ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Register1-3ViewController.swift"; sourceTree = "<group>"; };
 		CAA7E19C25F40C4500281DC4 /* NotificationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTableViewCell.swift; sourceTree = "<group>"; };
+		CAB2D6FC25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeDietitianTableViewCell.swift; sourceTree = "<group>"; };
 		CAB51DFD25F2DB76003DE670 /* NotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsViewController.swift; sourceTree = "<group>"; };
 		CAB8921F25EAD5F1005F08E1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CAB8D10D25E64A1C00601803 /* Diyetteyiz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Diyetteyiz.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -159,6 +163,7 @@
 				CAB8D11225E64A1C00601803 /* SceneDelegate.swift */,
 				CA28FB2525E6ABE40020FC32 /* Extensions.swift */,
 				CA6C774025E83374008E401E /* DatabaseManager.swift */,
+				CA21F04525FA3F06004EB39D /* StorageManager.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -185,6 +190,7 @@
 				CAA7E19C25F40C4500281DC4 /* NotificationTableViewCell.swift */,
 				CA5345C225F7E45F007B4DA6 /* UserSearchTableViewCell.swift */,
 				CAD3CEE025F8E8DC00036A97 /* DietitianMenusTableViewCell.swift */,
+				CAB2D6FC25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -554,9 +560,11 @@
 				CAA7E19D25F40C4500281DC4 /* NotificationTableViewCell.swift in Sources */,
 				CA28FB0F25E6559B0020FC32 /* ProfileViewController.swift in Sources */,
 				CAB8D11525E64A1C00601803 /* HomeViewController.swift in Sources */,
+				CAB2D6FD25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift in Sources */,
 				CAB8D11125E64A1C00601803 /* AppDelegate.swift in Sources */,
 				CA28FB2625E6ABE40020FC32 /* Extensions.swift in Sources */,
 				CA28FB0525E655820020FC32 /* SearchViewController.swift in Sources */,
+				CA21F04625FA3F06004EB39D /* StorageManager.swift in Sources */,
 				CA5345C325F7E45F007B4DA6 /* UserSearchTableViewCell.swift in Sources */,
 				CA6C774125E83374008E401E /* DatabaseManager.swift in Sources */,
 				CAB8D11325E64A1C00601803 /* SceneDelegate.swift in Sources */,

@@ -7,6 +7,7 @@
 
 import UIKit
 import JGProgressHUD
+import SDWebImage
 
 struct ProfileViewModel {
     let name: String?
@@ -131,10 +132,29 @@ class ProfileViewController: UIViewController {
         
         configureNavigationBar()
         
+        getPP()
         
         followButton.addTarget(self, action: #selector(didTapFollowButton), for: .touchUpInside)
         
         navigationItem.title = "Profil"
+    }
+    
+    private func getPP() {
+        guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
+            return
+        }
+        
+        let filename = email + "_PP.png"
+        let path = "img/"+filename
+        
+        StorageManager.shared.downloadURL(for: path, completion: { result in
+            switch result {
+            case .success(let url):
+                self.profilePhoto.sd_setImage(with: url, completed: nil)
+            case .failure(let error):
+                print("Failed to get download url: \(error)")
+            }
+        })
     }
     
     @objc private func didTapFollowButton() {
@@ -157,18 +177,8 @@ class ProfileViewController: UIViewController {
         
         if UserDefaults.standard.integer(forKey: "permission") == 1 {
             getUserData(query: email)
-            setDefaultProfilePic()
         } else {
             getDietitianData(query: email)
-            setDefaultProfilePic()
-        }
-    }
-    
-    private func setDefaultProfilePic() {
-        if UserDefaults.standard.string(forKey: "gender") == "Female" {
-            profilePhoto.image = UIImage(named: "womanPic")
-        } else {
-            profilePhoto.image = UIImage(named: "manPic")
         }
     }
     
@@ -325,7 +335,5 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         return UITableViewCell()
     }
-    
-    
 }
 

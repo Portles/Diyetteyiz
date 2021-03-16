@@ -81,8 +81,6 @@ class Register1_3ViewController: UIViewController {
             if let error = error {
                 print(error)
             }
-            
-            // Enable or disable features based on the authorization.
         }
     }
     

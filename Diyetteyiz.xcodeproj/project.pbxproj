@@ -17,6 +17,7 @@
 		CA28FB2125E699C30020FC32 /* Register1-0ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA28FB2025E699C30020FC32 /* Register1-0ViewController.swift */; };
 		CA28FB2625E6ABE40020FC32 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA28FB2525E6ABE40020FC32 /* Extensions.swift */; };
 		CA28FB2B25E6DF1C0020FC32 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA28FB2A25E6DF1C0020FC32 /* ForgotPasswordViewController.swift */; };
+		CA2EAEFF25FCC9CF0069CAE6 /* DietitianHomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2EAEFE25FCC9CF0069CAE6 /* DietitianHomeCollectionViewCell.swift */; };
 		CA5345C325F7E45F007B4DA6 /* UserSearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5345C225F7E45F007B4DA6 /* UserSearchTableViewCell.swift */; };
 		CA63282725ED71E9003D7B9C /* ProfileSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA63282625ED71E9003D7B9C /* ProfileSettingsViewController.swift */; };
 		CA6C774125E83374008E401E /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6C774025E83374008E401E /* DatabaseManager.swift */; };
@@ -35,8 +36,19 @@
 		CAB8D11D25E64A1C00601803 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CAB8D11B25E64A1C00601803 /* LaunchScreen.storyboard */; };
 		CAB8D12825E64A1D00601803 /* DiyetteyizTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB8D12725E64A1D00601803 /* DiyetteyizTests.swift */; };
 		CAB8D13325E64A1D00601803 /* DiyetteyizUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB8D13225E64A1D00601803 /* DiyetteyizUITests.swift */; };
+		CACECE032601129800433104 /* AddProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACECE022601129800433104 /* AddProductViewController.swift */; };
+		CACECE0B260124BF00433104 /* AddDayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACECE0A260124BF00433104 /* AddDayViewController.swift */; };
+		CACECE10260124F700433104 /* AddMealViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACECE0F260124F700433104 /* AddMealViewController.swift */; };
+		CACECE152601250200433104 /* AddItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACECE142601250200433104 /* AddItemViewController.swift */; };
+		CACECE1A26012B5F00433104 /* DietMenuModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACECE1926012B5F00433104 /* DietMenuModel.swift */; };
+		CACECE2026012D2D00433104 /* AddDayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACECE1F26012D2D00433104 /* AddDayTableViewCell.swift */; };
+		CACECE28260137A100433104 /* AddMealTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACECE27260137A000433104 /* AddMealTableViewCell.swift */; };
 		CAD3CEE125F8E8DC00036A97 /* DietitianMenusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD3CEE025F8E8DC00036A97 /* DietitianMenusTableViewCell.swift */; };
 		CAD9693325F172E1008EA88E /* DietitianProfileMenusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD9693225F172E1008EA88E /* DietitianProfileMenusTableViewCell.swift */; };
+		CAFCF7A025FE7B9C0066C2F9 /* SearchProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFCF79F25FE7B9C0066C2F9 /* SearchProfileViewController.swift */; };
+		CAFCF7AD25FEA9450066C2F9 /* HomeMenusCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFCF7AC25FEA9450066C2F9 /* HomeMenusCollectionViewCell.swift */; };
+		CAFCF7B225FEC28B0066C2F9 /* HomeUserCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFCF7B125FEC28B0066C2F9 /* HomeUserCollectionViewCell.swift */; };
+		CAFCF7B725FFF1330066C2F9 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFCF7B625FFF1330066C2F9 /* MenuViewController.swift */; };
 		DA7EA5BA2678DA8385F85858 /* Pods_Diyetteyiz_DiyetteyizUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BAF793EE6B54E0F81E40CD8 /* Pods_Diyetteyiz_DiyetteyizUITests.framework */; };
 		ED8CF98AC204024EF9141910 /* Pods_DiyetteyizTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF23F623175531DE7D72FA69 /* Pods_DiyetteyizTests.framework */; };
 /* End PBXBuildFile section */
@@ -75,6 +87,7 @@
 		CA28FB2025E699C30020FC32 /* Register1-0ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Register1-0ViewController.swift"; sourceTree = "<group>"; };
 		CA28FB2525E6ABE40020FC32 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		CA28FB2A25E6DF1C0020FC32 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
+		CA2EAEFE25FCC9CF0069CAE6 /* DietitianHomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietitianHomeCollectionViewCell.swift; sourceTree = "<group>"; };
 		CA5345C225F7E45F007B4DA6 /* UserSearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSearchTableViewCell.swift; sourceTree = "<group>"; };
 		CA63282625ED71E9003D7B9C /* ProfileSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsViewController.swift; sourceTree = "<group>"; };
 		CA6C774025E83374008E401E /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
@@ -99,8 +112,19 @@
 		CAB8D12E25E64A1D00601803 /* DiyetteyizUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DiyetteyizUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAB8D13225E64A1D00601803 /* DiyetteyizUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiyetteyizUITests.swift; sourceTree = "<group>"; };
 		CAB8D13425E64A1D00601803 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CACECE022601129800433104 /* AddProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProductViewController.swift; sourceTree = "<group>"; };
+		CACECE0A260124BF00433104 /* AddDayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDayViewController.swift; sourceTree = "<group>"; };
+		CACECE0F260124F700433104 /* AddMealViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMealViewController.swift; sourceTree = "<group>"; };
+		CACECE142601250200433104 /* AddItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemViewController.swift; sourceTree = "<group>"; };
+		CACECE1926012B5F00433104 /* DietMenuModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietMenuModel.swift; sourceTree = "<group>"; };
+		CACECE1F26012D2D00433104 /* AddDayTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDayTableViewCell.swift; sourceTree = "<group>"; };
+		CACECE27260137A000433104 /* AddMealTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddMealTableViewCell.swift; sourceTree = "<group>"; };
 		CAD3CEE025F8E8DC00036A97 /* DietitianMenusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietitianMenusTableViewCell.swift; sourceTree = "<group>"; };
 		CAD9693225F172E1008EA88E /* DietitianProfileMenusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietitianProfileMenusTableViewCell.swift; sourceTree = "<group>"; };
+		CAFCF79F25FE7B9C0066C2F9 /* SearchProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchProfileViewController.swift; sourceTree = "<group>"; };
+		CAFCF7AC25FEA9450066C2F9 /* HomeMenusCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeMenusCollectionViewCell.swift; sourceTree = "<group>"; };
+		CAFCF7B125FEC28B0066C2F9 /* HomeUserCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeUserCollectionViewCell.swift; sourceTree = "<group>"; };
+		CAFCF7B625FFF1330066C2F9 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		CF23F623175531DE7D72FA69 /* Pods_DiyetteyizTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DiyetteyizTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB7D0F1F7E276FFF460F0337 /* Pods-Diyetteyiz.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Diyetteyiz.debug.xcconfig"; path = "Target Support Files/Pods-Diyetteyiz/Pods-Diyetteyiz.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -171,6 +195,7 @@
 		CA28FAF825E6513A0020FC32 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				CACECE1926012B5F00433104 /* DietMenuModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -185,12 +210,16 @@
 		CA28FAFA25E651460020FC32 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				CACECE1E26012D0F00433104 /* AddDiet */,
 				CA28FAFC25E651600020FC32 /* Storyboards */,
 				CAD9693225F172E1008EA88E /* DietitianProfileMenusTableViewCell.swift */,
 				CAA7E19C25F40C4500281DC4 /* NotificationTableViewCell.swift */,
 				CA5345C225F7E45F007B4DA6 /* UserSearchTableViewCell.swift */,
 				CAD3CEE025F8E8DC00036A97 /* DietitianMenusTableViewCell.swift */,
 				CAB2D6FC25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift */,
+				CA2EAEFE25FCC9CF0069CAE6 /* DietitianHomeCollectionViewCell.swift */,
+				CAFCF7AC25FEA9450066C2F9 /* HomeMenusCollectionViewCell.swift */,
+				CAFCF7B125FEC28B0066C2F9 /* HomeUserCollectionViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -198,10 +227,13 @@
 		CA28FAFB25E6514B0020FC32 /* Controls */ = {
 			isa = PBXGroup;
 			children = (
+				CACECE012601126300433104 /* AddProgram */,
 				CA28FAFD25E6519A0020FC32 /* Login */,
 				CA63282B25ED72BC003D7B9C /* Core tabs */,
 				CA63282625ED71E9003D7B9C /* ProfileSettingsViewController.swift */,
 				CAB51E0725F2DB9F003DE670 /* Notifications */,
+				CAFCF79F25FE7B9C0066C2F9 /* SearchProfileViewController.swift */,
+				CAFCF7B625FFF1330066C2F9 /* MenuViewController.swift */,
 			);
 			path = Controls;
 			sourceTree = "<group>";
@@ -309,6 +341,26 @@
 				CAB8D13425E64A1D00601803 /* Info.plist */,
 			);
 			path = DiyetteyizUITests;
+			sourceTree = "<group>";
+		};
+		CACECE012601126300433104 /* AddProgram */ = {
+			isa = PBXGroup;
+			children = (
+				CACECE022601129800433104 /* AddProductViewController.swift */,
+				CACECE0A260124BF00433104 /* AddDayViewController.swift */,
+				CACECE0F260124F700433104 /* AddMealViewController.swift */,
+				CACECE142601250200433104 /* AddItemViewController.swift */,
+			);
+			path = AddProgram;
+			sourceTree = "<group>";
+		};
+		CACECE1E26012D0F00433104 /* AddDiet */ = {
+			isa = PBXGroup;
+			children = (
+				CACECE1F26012D2D00433104 /* AddDayTableViewCell.swift */,
+				CACECE27260137A000433104 /* AddMealTableViewCell.swift */,
+			);
+			path = AddDiet;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -551,28 +603,40 @@
 			buildActionMask = 2147483647;
 			files = (
 				CAD9693325F172E1008EA88E /* DietitianProfileMenusTableViewCell.swift in Sources */,
+				CAFCF7A025FE7B9C0066C2F9 /* SearchProfileViewController.swift in Sources */,
 				CA28FB2125E699C30020FC32 /* Register1-0ViewController.swift in Sources */,
+				CAFCF7B725FFF1330066C2F9 /* MenuViewController.swift in Sources */,
 				CA28FB1725E699410020FC32 /* LoginViewController.swift in Sources */,
+				CA2EAEFF25FCC9CF0069CAE6 /* DietitianHomeCollectionViewCell.swift in Sources */,
 				CAD3CEE125F8E8DC00036A97 /* DietitianMenusTableViewCell.swift in Sources */,
 				CA28FB2B25E6DF1C0020FC32 /* ForgotPasswordViewController.swift in Sources */,
 				CA6C774625E85EC4008E401E /* Register1-1ViewController.swift in Sources */,
+				CAFCF7AD25FEA9450066C2F9 /* HomeMenusCollectionViewCell.swift in Sources */,
 				CA6C774B25E85ECE008E401E /* Register1-2ViewController.swift in Sources */,
 				CAA7E19D25F40C4500281DC4 /* NotificationTableViewCell.swift in Sources */,
 				CA28FB0F25E6559B0020FC32 /* ProfileViewController.swift in Sources */,
+				CACECE152601250200433104 /* AddItemViewController.swift in Sources */,
 				CAB8D11525E64A1C00601803 /* HomeViewController.swift in Sources */,
+				CAFCF7B225FEC28B0066C2F9 /* HomeUserCollectionViewCell.swift in Sources */,
 				CAB2D6FD25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift in Sources */,
 				CAB8D11125E64A1C00601803 /* AppDelegate.swift in Sources */,
+				CACECE032601129800433104 /* AddProductViewController.swift in Sources */,
 				CA28FB2625E6ABE40020FC32 /* Extensions.swift in Sources */,
 				CA28FB0525E655820020FC32 /* SearchViewController.swift in Sources */,
 				CA21F04625FA3F06004EB39D /* StorageManager.swift in Sources */,
 				CA5345C325F7E45F007B4DA6 /* UserSearchTableViewCell.swift in Sources */,
+				CACECE10260124F700433104 /* AddMealViewController.swift in Sources */,
 				CA6C774125E83374008E401E /* DatabaseManager.swift in Sources */,
 				CAB8D11325E64A1C00601803 /* SceneDelegate.swift in Sources */,
+				CACECE2026012D2D00433104 /* AddDayTableViewCell.swift in Sources */,
 				CA28FB0A25E655920020FC32 /* ProductsViewController.swift in Sources */,
+				CACECE1A26012B5F00433104 /* DietMenuModel.swift in Sources */,
 				CAB51DFE25F2DB76003DE670 /* NotificationsViewController.swift in Sources */,
 				CA6C775025E85ED8008E401E /* Register1-3ViewController.swift in Sources */,
+				CACECE28260137A100433104 /* AddMealTableViewCell.swift in Sources */,
 				CA63282725ED71E9003D7B9C /* ProfileSettingsViewController.swift in Sources */,
 				CA28FB1C25E699520020FC32 /* DietitianRegisterViewController.swift in Sources */,
+				CACECE0B260124BF00433104 /* AddDayViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -33,7 +33,7 @@ class SearchViewController: UIViewController {
     
     private let dietitianButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Dietitians", for: .normal)
+        button.setTitle("Diyetisyenler", for: .normal)
         button.backgroundColor = .systemGreen
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 12
@@ -44,7 +44,7 @@ class SearchViewController: UIViewController {
     
     private let userButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Users", for: .normal)
+        button.setTitle("Kullanıcılar", for: .normal)
         button.backgroundColor = .systemGreen
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 12
@@ -55,7 +55,7 @@ class SearchViewController: UIViewController {
     
     private let productsButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Menus", for: .normal)
+        button.setTitle("Menüler", for: .normal)
         button.backgroundColor = .systemGreen
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 12
@@ -147,6 +147,13 @@ class SearchViewController: UIViewController {
         searchBar.text = ""
         searchBar.resignFirstResponder()
     }
+    
+    func openConversation(_ model: SearchResult){
+        let vc = SearchProfileViewController(with: model.email, name: model.name)
+        vc.title = model.name
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }
 
 extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
@@ -161,11 +168,8 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let targetUserData = results[indexPath.row]
-        
-        dismiss(animated: true, completion: { [weak self] in
-            self?.completion?(targetUserData)
-        })
+        let model = results[indexPath.row]
+        openConversation(model)
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 90

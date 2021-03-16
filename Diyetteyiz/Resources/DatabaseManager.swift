@@ -344,6 +344,16 @@ extension DatabaseManager {
         })
     }
     
+    public func getAllMenus(completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
+        database.child("menus").observeSingleEvent(of: .value, with: { snapshot in
+            guard let value = snapshot.value as? [[String: Any]] else {
+                completion(.failure(DatabaseError.dataCekmeHatasi))
+                return
+            }
+            completion(.success(value))
+        })
+    }
+    
     public func getAllDietitians(completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
         database.child("dietitians").observeSingleEvent(of: .value, with: { snapshot in
             guard let value = snapshot.value as? [[String: Any]] else {
@@ -409,4 +419,13 @@ struct SearchResult {
     let name: String
     let info: String
     let ppUrl: String
+}
+
+struct MenuViewModel {
+    let header: String
+    let info: String
+    let price: Int
+    let dietitianBind: String
+    let days: Int
+    let headerPicLoc: String
 }

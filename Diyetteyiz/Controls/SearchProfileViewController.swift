@@ -1,33 +1,17 @@
 //
-//  ProfileViewController.swift
+//  SearchProfileViewController.swift
 //  Diyetteyiz
 //
-//  Created by Nizamet Özkan on 24.02.2021.
+//  Created by Nizamet Özkan on 14.03.2021.
 //
 
 import UIKit
 import JGProgressHUD
-import SDWebImage
 
-struct ProfileViewModel {
-    let name: String?
-    let surname: String?
-    let bio: String?
-    let starRate: Double?
-    let height: String?
-    let fat: String?
-    let gender: String?
-}
+class SearchProfileViewController: UIViewController {
 
-struct DietitianViewModel {
-    let name: String?
-    let surname: String?
-    let bio: String?
-    let starRate: Double?
-    let gender: String?
-}
-
-class ProfileViewController: UIViewController {
+    private let email: String?
+    private let name: String?
     
     private var data = [ProfileViewModel]()
     
@@ -111,7 +95,7 @@ class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         view.backgroundColor = .systemBackground
         
         view.addSubview(headerView)
@@ -122,14 +106,14 @@ class ProfileViewController: UIViewController {
         view.addSubview(followButton)
         view.addSubview(tableView)
         
-        if UserDefaults.standard.integer(forKey: "permission") == 2 {
+        if email?.contains("_diyetteyiz-com") == true {
             tableView.isHidden = false
             tableView.delegate = self
             tableView.dataSource = self
-            configureAddMenuBar()
+            getDietitianData(query: email!)
+        } else {
+            getUserData(query: email!)
         }
-        
-        configureNavigationBar()
         
         getPP()
         
@@ -137,176 +121,6 @@ class ProfileViewController: UIViewController {
         
         navigationItem.title = "Profil"
     }
-    
-    private func getPP() {
-        guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
-            return
-        }
-        
-        let filename = email + "_PP.png"
-        let path = "img/"+filename
-        
-        StorageManager.shared.downloadURL(for: path, completion: { result in
-            switch result {
-            case .success(let url):
-                self.profilePhoto.sd_setImage(with: url, completed: nil)
-            case .failure(let error):
-                print("Failed to get download url: \(error)")
-            }
-        })
-    }
-    
-    @objc private func didTapFollowButton() {
-        if followButton.isSelected {
-            followButton.isSelected = false
-            followButton.backgroundColor = .systemBlue
-        } else {
-            followButton.isSelected = true
-            followButton.backgroundColor = .systemRed
-        }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        fillProfile()
-    }
-    
-    private func fillProfile() {
-        let email = UserDefaults.standard.string(forKey: "email") ?? ""
-        
-        if UserDefaults.standard.integer(forKey: "permission") == 1 {
-            getUserData(query: email)
-        } else {
-            getDietitianData(query: email)
-        }
-    }
-    
-    private func getDietitianData(query: String) {
-            dietitianData.removeAll()
-            if hasFetched {
-                filterDietitian(with: query)
-            }else{
-                DatabaseManager.shared.getAllDietitians(completion: { [weak self]result in
-                    switch result {
-                    case .success(let dietitianCollection):
-                        self?.hasFetched = true
-                        self?.dietitians = dietitianCollection
-                        self?.filterDietitian(with: query)
-                    case .failure(let error):
-                        print("Diyetisyen bilgilerine erişilemedi: \(error)")
-                    }
-                })
-            }
-    }
-    func filterDietitian(with term: String) {
-        guard let currentUserEmail = UserDefaults.standard.value(forKey: "email") as? String, hasFetched else {
-            return
-        }
-        
-        let safeMaille = DatabaseManager.safeEmail(emailAdress: currentUserEmail)
-        
-        let results: [DietitianViewModel] = dietitians.filter({
-            guard let email = $0["email"],
-                  email as! String == safeMaille else {
-                    return false
-            }
-            
-            return (email as AnyObject).hasPrefix(safeMaille.lowercased())
-        }).compactMap({
-            guard let name = $0["name"], let surName = $0["surname"], let starRate = $0["starRate"], let bio = $0["bio"], let gender = $0["gender"]  else {
-                return nil
-            }
-            
-            UserDefaults.standard.set(name, forKey: "name")
-            UserDefaults.standard.set(surName, forKey: "surname")
-            UserDefaults.standard.set(bio, forKey: "bio")
-            UserDefaults.standard.set(gender, forKey: "gender")
-            UserDefaults.standard.set(starRate, forKey: "starRate")
-            
-            return DietitianViewModel(name: name as? String, surname: surName as? String, bio: bio as? String, starRate: starRate as? Double, gender: gender as? String)
-        })
-        self.dietitianData = results
-
-        fullName.text = dietitianData[0].name! + " " + dietitianData[0].surname!
-        bio.text = dietitianData[0].bio
-        starRate.text = "Yıldız: " + String(dietitianData[0].starRate!) + "/5.0"
-    }
-    
-    private func configureNavigationBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .done, target: self, action: #selector(didTapSettingButton))
-    }
-    
-    private func configureAddMenuBar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .done, target: self, action: #selector(didTapAddButton))
-    }
-    
-    @objc private func didTapAddButton() {
-        let vc = AddProductViewController()
-        vc.title = "Diyet Programı Oluştur"
-        let nav = UINavigationController(rootViewController: vc)
-        nav.modalPresentationStyle = .fullScreen
-        present(nav, animated: true)
-    }
-    
-    @objc private func didTapSettingButton() {
-        let vc = ProfileSettingsViewController()
-        vc.title = "Settings"
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    
-    private func getUserData(query: String) {
-            data.removeAll()
-            if hasFetched {
-                filterUser(with: query)
-            }else{
-                DatabaseManager.shared.getAllUsers(completion: { [weak self]result in
-                    switch result {
-                    case .success(let usersCollection):
-                        self?.hasFetched = true
-                        self?.users = usersCollection
-                        self?.filterUser(with: query)
-                    case .failure(let error):
-                        print("Kişi bilgilerine erişilemedi: \(error)")
-                    }
-                })
-            }
-    }
-    func filterUser(with term: String) {
-        guard let currentUserEmail = UserDefaults.standard.value(forKey: "email") as? String, hasFetched else {
-            return
-        }
-        
-        let safeMaille = DatabaseManager.safeEmail(emailAdress: currentUserEmail)
-        
-        let results: [ProfileViewModel] = users.filter({
-            guard let email = $0["email"],
-                  email as! String == safeMaille else {
-                    return false
-            }
-            
-            return (email as AnyObject).hasPrefix(safeMaille.lowercased())
-        }).compactMap({
-            guard let name = $0["name"], let surName = $0["surname"], let starRate = $0["starRate"], let bio = $0["bio"], let fat = $0["fat"] ,let height = $0["height"], let gender = $0["gender"]  else {
-                return nil
-            }
-            
-            UserDefaults.standard.set(name, forKey: "name")
-            UserDefaults.standard.set(surName, forKey: "surname")
-            UserDefaults.standard.set(bio, forKey: "bio")
-            UserDefaults.standard.set(fat, forKey: "fat")
-            UserDefaults.standard.set(height, forKey: "height")
-            UserDefaults.standard.set(gender, forKey: "gender")
-            UserDefaults.standard.set(starRate, forKey: "starRate")
-            
-            return ProfileViewModel(name: name as? String, surname: surName as? String, bio: bio as? String, starRate: starRate as? Double, height: height as? String, fat: fat as? String, gender: gender as? String)
-        })
-        self.data = results
-
-        fullName.text = data[0].name! + " " + data[0].surname!
-        bio.text = data[0].bio
-        starRate.text = "Yıldız: " + String(data[0].starRate!) + "/5.0"
-    }
-
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -335,10 +149,140 @@ class ProfileViewController: UIViewController {
         
         backgoundView.layer.zPosition = 1
     }
+    
+    private func getPP() {
+        guard let searchedEmail = email else {
+            return
+        }
+        
+        let notSafeSearchedEmail = DatabaseManager.notSafeEmail(emailAdress: searchedEmail)
+        
+        let filename = notSafeSearchedEmail + "_PP.png"
+        let path = "img/"+filename
+        
+        StorageManager.shared.downloadURL(for: path, completion: { result in
+            switch result {
+            case .success(let url):
+                self.profilePhoto.sd_setImage(with: url, completed: nil)
+            case .failure(let error):
+                print("Failed to get download url: \(error)")
+            }
+        })
+    }
+    
+    private func getDietitianData(query: String) {
+            dietitianData.removeAll()
+            if hasFetched {
+                filterDietitian(with: query)
+            }else{
+                DatabaseManager.shared.getAllDietitians(completion: { [weak self]result in
+                    switch result {
+                    case .success(let dietitianCollection):
+                        self?.hasFetched = true
+                        self?.dietitians = dietitianCollection
+                        self?.filterDietitian(with: query)
+                    case .failure(let error):
+                        print("Diyetisyen bilgilerine erişilemedi: \(error)")
+                    }
+                })
+            }
+    }
+    func filterDietitian(with term: String) {
+        guard let currentUserEmail = email, hasFetched else {
+            return
+        }
+        
+        let safeMaille = DatabaseManager.safeEmail(emailAdress: currentUserEmail)
+        
+        let results: [DietitianViewModel] = dietitians.filter({
+            guard let email = $0["email"],
+                  email as! String == safeMaille else {
+                    return false
+            }
+            
+            return (email as AnyObject).hasPrefix(safeMaille.lowercased())
+        }).compactMap({
+            guard let name = $0["name"], let surName = $0["surname"], let starRate = $0["starRate"], let bio = $0["bio"], let gender = $0["gender"]  else {
+                return nil
+            }
+            
+            return DietitianViewModel(name: name as? String, surname: surName as? String, bio: bio as? String, starRate: starRate as? Double, gender: gender as? String)
+        })
+        self.dietitianData = results
+
+        fullName.text = dietitianData[0].name! + " " + dietitianData[0].surname!
+        bio.text = dietitianData[0].bio
+        starRate.text = "Yıldız: " + String(dietitianData[0].starRate!) + "/5.0"
+    }
+    
+    private func getUserData(query: String) {
+            data.removeAll()
+            if hasFetched {
+                filterUser(with: query)
+            }else{
+                DatabaseManager.shared.getAllUsers(completion: { [weak self]result in
+                    switch result {
+                    case .success(let usersCollection):
+                        self?.hasFetched = true
+                        self?.users = usersCollection
+                        self?.filterUser(with: query)
+                    case .failure(let error):
+                        print("Kişi bilgilerine erişilemedi: \(error)")
+                    }
+                })
+            }
+    }
+    func filterUser(with term: String) {
+        guard let currentUserEmail = email, hasFetched else {
+            return
+        }
+        
+        let safeMaille = DatabaseManager.safeEmail(emailAdress: currentUserEmail)
+        
+        let results: [ProfileViewModel] = users.filter({
+            guard let email = $0["email"],
+                  email as! String == safeMaille else {
+                    return false
+            }
+            
+            return (email as AnyObject).hasPrefix(safeMaille.lowercased())
+        }).compactMap({
+            guard let name = $0["name"], let surName = $0["surname"], let starRate = $0["starRate"], let bio = $0["bio"], let fat = $0["fat"] ,let height = $0["height"], let gender = $0["gender"]  else {
+                return nil
+            }
+            
+            return ProfileViewModel(name: name as? String, surname: surName as? String, bio: bio as? String, starRate: starRate as? Double, height: height as? String, fat: fat as? String, gender: gender as? String)
+        })
+        self.data = results
+
+        fullName.text = data[0].name! + " " + data[0].surname!
+        bio.text = data[0].bio
+        starRate.text = "Yıldız: " + String(data[0].starRate!) + "/5.0"
+    }
+    
+    @objc private func didTapFollowButton() {
+        if followButton.isSelected {
+            followButton.isSelected = false
+            followButton.backgroundColor = .systemBlue
+        } else {
+            followButton.isSelected = true
+            followButton.backgroundColor = .systemRed
+        }
+    }
+    
+    init(with email: String, name: String?) {
+        self.email = email
+        self.name = name
+        super.init(nibName: nil ,bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 }
 
-
-extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
+extension SearchProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 3
     }
@@ -347,4 +291,3 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         return UITableViewCell()
     }
 }
-

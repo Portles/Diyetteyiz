@@ -9,6 +9,8 @@ import UIKit
 
 class AddProductViewController: UIViewController {
 
+    public static var product = DietModel()
+    
     private let headerField: UITextField = {
         let field = UITextField()
         field.autocapitalizationType = .none
@@ -112,6 +114,7 @@ class AddProductViewController: UIViewController {
         myImageView.addGestureRecognizer(gesture)
         
         manageDaysButton.addTarget(self, action: #selector(didTapManageDaysButton), for: .touchUpInside)
+        sendFormButton.addTarget(self, action: #selector(didTapSendFormButton), for: .touchUpInside)
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "power"), style: .done, target: self, action: #selector(didTapCloseButton))
         
@@ -130,7 +133,25 @@ class AddProductViewController: UIViewController {
         sendFormButton.frame = CGRect(x: 30, y: manageDaysButton.bottom + 60, width: view.width - 60, height: 52)
     }
     
+    @objc private func didTapSendFormButton() {
+        guard let header = headerField.text, let info = infoField.text, let price = priceField.text, !header.isEmpty, !info.isEmpty, !price.isEmpty else {
+            return
+        }
+        
+        AddProductViewController.product.header = header
+        AddProductViewController.product.info = info
+        AddProductViewController.product.price = price
+        AddProductViewController.product.Days = AddDayViewController.currentDays
+        
+        
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
     @objc private func didTapManageDaysButton() {
+        
+        AddDayViewController.currentDays.removeAll()
+        
         let vc = AddDayViewController()
         vc.title = "Gün Ekleme"
         navigationController?.pushViewController(vc, animated: true)

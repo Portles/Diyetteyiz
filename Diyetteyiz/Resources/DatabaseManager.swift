@@ -334,6 +334,84 @@ extension DatabaseManager {
         }
     }
     
+    // MARK: - Diyet Programı Ekleme
+    
+    public func InsertDietitianProgram(with product: DietModel, miniProduct: MenuViewModel, completion: @escaping (Bool) -> Void){
+        let jsonEncoder = JSONEncoder()
+        let jsonData = try! jsonEncoder.encode(product)
+        let json = String(data: jsonData, encoding: String.Encoding.utf8)
+        let nowDate = Date()
+        let dateString = DatabaseManager.dateFormatter.string(from: nowDate)
+        let safeMail = DatabaseManager.safeEmail(emailAdress: UserDefaults.standard.string(forKey: "email")!)
+        database.child(safeMail).setValue([
+            "name": ""
+            ], withCompletionBlock: { [weak self]error, _ in
+                
+                guard let strongSelf = self else {
+                    return
+                }
+                
+                guard error == nil else {
+                    print("Database yazım hatası.")
+                    completion(false)
+                    return
+                }
+                strongSelf.database.child("\(safeMail)/notifications").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                    if var userNotification = snapshot.value as? [[String: Any]] {
+                        let newElement = [
+                            "header": "Diyet Programı",
+                            "info": "Program bize ulaştı kabul için beklemede kalın. 👍",
+                            "isRead": false,
+                            "time": dateString
+                        ] as [String : Any]
+                        guard let strongSelf = self else {
+                            return
+                        }
+                        userNotification.append(newElement)
+                        strongSelf.database.child("\(safeMail)/notifications").setValue(userNotification, withCompletionBlock: { error, _ in
+                            guard error == nil else {
+                                completion(false)
+                                return
+                            }
+                            completion(true)
+                        })
+                    } else {
+                        let newCollection: [[String: Any]] = [
+                            [
+                                "header": "Diyet Programı",
+                                "info": "Program bize ulaştı kabul için beklemede kalın. 👍",
+                                "isRead": false,
+                                "time": dateString
+                            ]
+                        ]
+                        
+                        strongSelf.database.child("\(safeMail)/notifications").setValue(newCollection, withCompletionBlock: { error, _ in
+                            guard error == nil else {
+                                completion(false)
+                                return
+                            }
+                            completion(true)
+                        })
+                    }
+                })
+                
+                
+                strongSelf.database.child("\(safeMail)/products").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                        guard let strongSelf = self else {
+                            return
+                        }
+                        
+                        strongSelf.database.child("\(safeMail)/products").setValue(json, withCompletionBlock: { error, _ in
+                            guard error == nil else {
+                                completion(false)
+                                return
+                            }
+                            completion(true)
+                        })
+                })
+        })
+    }
+    
     public func getAllUsers(completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
         database.child("users").observeSingleEvent(of: .value, with: { snapshot in
             guard let value = snapshot.value as? [[String: Any]] else {

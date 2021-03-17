@@ -9,7 +9,8 @@ import UIKit
 
 class AddDayViewController: UIViewController {
 
-    public var Days = 1
+    public static var Days = 0
+    public static var currentDays = [Day]()
     
     private let tableView: UITableView = {
       let tableView = UITableView()
@@ -46,15 +47,26 @@ class AddDayViewController: UIViewController {
     }
     
     @objc private func didTapPlusButton() {
-        Days += 1
-        tableView.reloadData()
+        
+        AddMealViewController.currentMeals.removeAll()
+        
+        let vc = AddMealViewController()
+        vc.title = "Öğün Ekle"
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc private func didTapConfirmButton() {
         
-        // Doldur aga
+        AddProductViewController.product.Days?.append(contentsOf: AddDayViewController.currentDays)
+        
+        
         
         navigationController?.popViewController(animated: true)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        tableView.reloadData()
     }
     
     override func viewDidLayoutSubviews() {
@@ -67,7 +79,7 @@ class AddDayViewController: UIViewController {
 
 extension AddDayViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Days
+        return AddDayViewController.currentDays.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -78,9 +90,7 @@ extension AddDayViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let vc = AddMealViewController()
-        vc.title = "Öğünler"
-        navigationController?.pushViewController(vc, animated: true)
+        
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

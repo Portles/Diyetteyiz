@@ -239,7 +239,7 @@ class HomeViewController: UIViewController {
     
     func filterMenus() {
         let results: [MenuViewModel] = users.compactMap({
-            guard let header = $0["header"] as? String, let info = $0["info"] as? String , let price = $0["price"] as? Int , let dietitianBind = $0["dietitianBind"] as? String , let days = $0["days"] as? Int , let headerPicLoc = $0["headerPicLoc"] as? String else {
+            guard let header = $0["header"] as? String, let info = $0["info"] as? String , let price = $0["price"] as? String , let dietitianBind = $0["dietitianBind"] as? String , let days = $0["days"] as? Int , let headerPicLoc = $0["headerPicLoc"] as? String else {
                 return nil
             }
             
@@ -257,8 +257,8 @@ class HomeViewController: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
     
-    func openMenu(_ model: SearchResult){
-        let vc = MenuViewController(with: model.email, id: model.name)
+    func openMenu(_ model: MenuViewModel){
+        let vc = MenuViewController(with: model.dietitianBind, id: model.header)
         vc.title = "Menü"
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)
@@ -310,7 +310,7 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
             openConversation(model)
         } else {
             userCollectionView?.deselectItem(at: indexPath, animated: true)
-            let model = userResults[indexPath.row]
+            let model = menuResults[indexPath.row]
             openMenu(model)
         }
     }

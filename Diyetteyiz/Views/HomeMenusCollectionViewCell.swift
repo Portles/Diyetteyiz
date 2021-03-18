@@ -77,7 +77,7 @@ class HomeMenusCollectionViewCell: UICollectionViewCell {
         super.layoutSubviews()
         view.frame = CGRect(x: 10, y: 0, width: contentView.width-10, height: contentView.height-10)
         myImageView.frame = CGRect(x: view.left + 10, y: 10, width: 175, height: 75)
-        headerLabel.frame = CGRect(x: view.left + 10, y: myImageView.bottom + 5, width: 150, height: 26)
+        headerLabel.frame = CGRect(x: view.left + 10, y: myImageView.bottom + 5, width: 250, height: 26)
         infoLabel.frame = CGRect(x: view.left + 10, y: headerLabel.bottom, width: 400, height: 52)
         daysLabel.frame = CGRect(x: myImageView.right + 30, y: 5, width: 200, height: 75)
         rightArrow.frame = CGRect(x: view.right - 75, y: myImageView.bottom, width: 50, height: 50)

@@ -7,6 +7,15 @@
 
 import UIKit
 
+struct MenuViewModelDiet {
+    let header: String?
+    let info: String?
+    let price: String?
+    let dietitianBind: String?
+    let days: Int?
+    let headerPicLoc: String?
+}
+
 class AddProductViewController: UIViewController {
 
     public static var product = DietModel()
@@ -93,6 +102,7 @@ class AddProductViewController: UIViewController {
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 12
         button.layer.masksToBounds = true
+        button.isEnabled = false
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
         return button
     }()
@@ -121,6 +131,11 @@ class AddProductViewController: UIViewController {
         view.backgroundColor = .systemBackground
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        sendFormButton.isEnabled = true
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -142,8 +157,36 @@ class AddProductViewController: UIViewController {
         AddProductViewController.product.info = info
         AddProductViewController.product.price = price
         AddProductViewController.product.Days = AddDayViewController.currentDays
+        AddProductViewController.product.isActivated = false
         
+        let email = DatabaseManager.safeEmail(emailAdress: UserDefaults.standard.string(forKey: "email")!)
+        let picLoc = "\(email)" + String(Int.random(in: 0...100))
+        let picLocUpload = picLoc + ".png"
+        let smallInfo: String = info.prefix(20) + "..."
+        let dayCount = String(AddProductViewController.product.Days?.count ?? 0)
         
+        let searchProduct = MenuViewModelDiet(header: header, info: smallInfo, price: price, dietitianBind: email, days: Int(dayCount), headerPicLoc: picLoc)
+        
+        DatabaseManager.shared.InsertDietitianProgram(with: AddProductViewController.product, miniProduct: searchProduct, completion: { succes in
+            if succes {
+                print("Kayıt başarılı.")
+                
+                guard let image = self.myImageView.image, let data = image.pngData() else {
+                return
+                }
+                
+                StorageManager.shared.uploadMenuPic(with: data, fileName: picLocUpload, completion: { result in
+                    switch result {
+                    case .success(let downloadURL):
+                        UserDefaults.standard.set(downloadURL, forKey: "pp_url")
+                        print(downloadURL)
+                    case .failure(let error):
+                        print("Data yönetimi hatası. \(error)")
+                    }
+                })
+                
+            }
+        })
         
         dismiss(animated: true, completion: nil)
     }

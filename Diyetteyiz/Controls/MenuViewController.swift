@@ -9,6 +9,17 @@ import UIKit
 
 class MenuViewController: UIViewController {
 
+    struct MenuViewModel {
+        let header: String?
+        let info: String?
+        let isActivated: Bool?
+        let price: String?
+    }
+    
+    private var menuData = [MenuViewModel]()
+    private var menu = [[String : Any]]()
+    private var hasFetched = false
+    
     private let dietitianEmail: String?
     private let id: String?
     
@@ -119,11 +130,55 @@ class MenuViewController: UIViewController {
         super.init(nibName: nil ,bundle: nil)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        getMenu(query: self.dietitianEmail!)
+    }
+    
+    // MARK: Gettin Menu
+    private func getMenu(query: String) {
+        if hasFetched {
+            filterMenu(with: query)
+        }else{
+            DatabaseManager.shared.getDietitianMenu(with: self.dietitianEmail!,completion: { [weak self]result in
+                switch result {
+                case .success(let menuCollection):
+                    self?.hasFetched = true
+                    self?.menu = menuCollection
+                    self?.filterMenu(with: query)
+                case .failure(let error):
+                    print("Kişi bilgilerine erişilemedi: \(error)")
+                }
+            })
+        }
+        
+    }
+    private func filterMenu(with term: String) {
+        let results: [MenuViewModel] = menu.filter({
+            // FIXME: Filtreyi Düzelt (Sadece testte çalışıcak diğerlerinde çalışmicak!)
+            guard let header = $0["header"],
+                  header as? String == self.id else {
+                    return false
+            }
+
+            return (header as AnyObject).hasPrefix(self.id!.lowercased())
+        }).compactMap({
+            guard let header = $0["header"], let info = $0["info"], let isActivated = $0["isActivated"], let price = $0["price"] else {
+                return nil
+            }
+
+            return MenuViewModel(header: header as? String, info: info as? String, isActivated: isActivated as? Bool, price: price as? String)
+        })
+        self.menuData = results
+        
+        headerLabel.text = self.menuData[0].header
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width, height: view.height/4.0)
-        backView.frame = CGRect(x: 30, y: headerView.bottom - 50, width: view.width - 50, height: view.height - 400)
+        backView.frame = CGRect(x: 30, y: headerView.bottom - 50, width: view.width - 60, height: view.height - 400)
         myImageView.frame = CGRect(x: backView.left + 10, y: backView.top + 10, width: (backView.width/2) - 20, height: 100)
         daysLabel.frame = CGRect(x: myImageView.right + 30, y: myImageView.top, width: 125, height: 30)
         priceLabel.frame = CGRect(x: myImageView.right + 30, y: daysLabel.bottom + 10, width: 125, height: 30)
@@ -132,8 +187,6 @@ class MenuViewController: UIViewController {
         headerLabel.frame = CGRect(x: backView.left + 10, y: mealCountLabel.bottom, width: 350, height: 50)
         infoLabel.frame = CGRect(x: backView.left + 10, y: headerLabel.bottom, width: 350, height: 300)
         buyButton.frame =  CGRect(x: 30, y: backView.bottom+20, width: view.width-60, height: 52)
-        
-        
         
         configureHeaderView()
     }

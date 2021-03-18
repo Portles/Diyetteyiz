@@ -44,6 +44,31 @@ final class StorageManager {
             })
         })
     }
+    
+    public func uploadMenuPic(with data: Data, fileName: String, completion: @escaping uploadPictureCompletion) {
+        storage.child("menus/\(fileName)").putData(data, metadata: nil, completion: { [weak self] metadata, error in
+            
+            guard let strongSelf = self else {
+                return
+            }
+            
+            guard error == nil else {
+                print("Fotoğraf Firebase'e upload edilemedi.")
+                completion(.failure(StorageError.failedUplod))
+                return
+            }
+            strongSelf.storage.child("menus/\(fileName)").downloadURL(completion: { url, error in
+                guard let url = url else {
+                    print("İndirme url'si bulunamadı.")
+                    completion(.failure(StorageError.failedToGetDownloadUrl))
+                    return
+                }
+                let urlString = url.absoluteString
+                print("İndirme URL'si: \(urlString)")
+                completion(.success(urlString))
+            })
+        })
+    }
     public enum StorageError: Error {
         case failedUplod
         case failedToGetDownloadUrl

@@ -336,11 +336,29 @@ extension DatabaseManager {
     
     // MARK: - Diyet Programı Ekleme
     
-    public func InsertDietitianProgram(with product: DietModel, miniProduct: MenuViewModel, completion: @escaping (Bool) -> Void){
+    public func InsertDietitianProgram(with product: DietModel, miniProduct: MenuViewModelDiet, completion: @escaping (Bool) -> Void){
         let jsonEncoder = JSONEncoder()
+        jsonEncoder.outputFormatting = .withoutEscapingSlashes
         let jsonData = try! jsonEncoder.encode(product)
-        let json = String(data: jsonData, encoding: String.Encoding.utf8)
+        let str = String(data: jsonData, encoding: String.Encoding.utf8)
         let nowDate = Date()
+        
+        // MARK: Map product
+        
+        func convertToDictionary(text: String) -> [String: Any]? {
+            if let data = text.data(using: .utf8) {
+                do {
+                    return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+            return nil
+        }
+
+        let json = convertToDictionary(text: str!)
+        
+        
         let dateString = DatabaseManager.dateFormatter.string(from: nowDate)
         let safeMail = DatabaseManager.safeEmail(emailAdress: UserDefaults.standard.string(forKey: "email")!)
         database.child(safeMail).setValue([
@@ -360,7 +378,7 @@ extension DatabaseManager {
                     if var userNotification = snapshot.value as? [[String: Any]] {
                         let newElement = [
                             "header": "Diyet Programı",
-                            "info": "Program bize ulaştı kabul için beklemede kalın. 👍",
+                            "info": "Program bize ulaştı kabul için beklemede kal. 👍",
                             "isRead": false,
                             "time": dateString
                         ] as [String : Any]
@@ -379,7 +397,7 @@ extension DatabaseManager {
                         let newCollection: [[String: Any]] = [
                             [
                                 "header": "Diyet Programı",
-                                "info": "Program bize ulaştı kabul için beklemede kalın. 👍",
+                                "info": "Program bize ulaştı kabul için beklemede kal. 👍",
                                 "isRead": false,
                                 "time": dateString
                             ]
@@ -395,20 +413,87 @@ extension DatabaseManager {
                     }
                 })
                 
-                
+                // MARK: İlk Kısım Insert
                 strongSelf.database.child("\(safeMail)/products").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                    
+                    if var userCollection = snapshot.value as? [[String: Any]] {
                         guard let strongSelf = self else {
                             return
                         }
-                        
-                        strongSelf.database.child("\(safeMail)/products").setValue(json, withCompletionBlock: { error, _ in
+                        userCollection.append(json!)
+                        strongSelf.database.child("\(safeMail)/products").setValue(userCollection, withCompletionBlock: { error, _ in
                             guard error == nil else {
                                 completion(false)
                                 return
                             }
                             completion(true)
                         })
+                    } else {
+                        let newCollection: [[String: Any]] = [
+                            json!
+                        ]
+                        strongSelf.database.child("\(safeMail)/products").setValue(newCollection, withCompletionBlock: { error, _ in
+                            guard error == nil else {
+                                completion(false)
+                                return
+                            }
+                            completion(true)
+                        })
+                    }
                 })
+                // MARK: Menus kısmına yazma
+                strongSelf.database.child("menus").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                    if var userNotification = snapshot.value as? [[String: Any]] {
+                        let newElement = [
+                            "header": miniProduct.header!,
+                            "info": miniProduct.info!,
+                            "days": miniProduct.days!,
+                            "price": miniProduct.price!,
+                            "dietitianBind": safeMail,
+                            "headerPicLoc": miniProduct.headerPicLoc!
+                        ] as [String : Any]
+                        guard let strongSelf = self else {
+                            return
+                        }
+                        userNotification.append(newElement)
+                        strongSelf.database.child("menus").setValue(userNotification, withCompletionBlock: { error, _ in
+                            guard error == nil else {
+                                completion(false)
+                                return
+                            }
+                            completion(true)
+                        })
+                    } else {
+                        let newCollection: [[String: Any]] = [
+                            [
+                                "header": miniProduct.header!,
+                                "info": miniProduct.info!,
+                                "days": miniProduct.days!,
+                                "price": miniProduct.price!,
+                                "dietitianBind": safeMail,
+                                "headerPicLoc": miniProduct.headerPicLoc!
+                            ]
+                        ]
+                        
+                        strongSelf.database.child("menus").setValue(newCollection, withCompletionBlock: { error, _ in
+                            guard error == nil else {
+                                completion(false)
+                                return
+                            }
+                            completion(true)
+                        })
+                    }
+                })
+        })
+    }
+    
+    public func getDietitianMenu(with dietitianEmail: String ,completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
+        database.child("\(dietitianEmail)/products").observeSingleEvent(of: .value, with: { snapshot in
+            guard let value = snapshot.value as? [[String: Any]] else {
+                completion(.failure(DatabaseError.dataCekmeHatasi))
+                return
+            }
+            completion(.success(value))
         })
     }
     
@@ -502,7 +587,7 @@ struct SearchResult {
 struct MenuViewModel {
     let header: String
     let info: String
-    let price: Int
+    let price: String
     let dietitianBind: String
     let days: Int
     let headerPicLoc: String

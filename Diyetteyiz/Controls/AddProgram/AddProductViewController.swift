@@ -158,6 +158,9 @@ class AddProductViewController: UIViewController {
         AddProductViewController.product.price = price
         AddProductViewController.product.Days = AddDayViewController.currentDays
         AddProductViewController.product.isActivated = false
+        AddProductViewController.product.daysCount = AddDayViewController.Days
+        AddProductViewController.product.mealCount = AddMealViewController.Meals
+        AddProductViewController.product.itemcount = AddItemViewController.items
         
         let email = DatabaseManager.safeEmail(emailAdress: UserDefaults.standard.string(forKey: "email")!)
         let picLoc = "\(email)" + String(Int.random(in: 0...100))
@@ -170,21 +173,19 @@ class AddProductViewController: UIViewController {
         DatabaseManager.shared.InsertDietitianProgram(with: AddProductViewController.product, miniProduct: searchProduct, completion: { succes in
             if succes {
                 print("Kayıt başarılı.")
-                
-                guard let image = self.myImageView.image, let data = image.pngData() else {
-                return
-                }
-                
-                StorageManager.shared.uploadMenuPic(with: data, fileName: picLocUpload, completion: { result in
-                    switch result {
-                    case .success(let downloadURL):
-                        UserDefaults.standard.set(downloadURL, forKey: "pp_url")
-                        print(downloadURL)
-                    case .failure(let error):
-                        print("Data yönetimi hatası. \(error)")
-                    }
-                })
-                
+            }
+        })
+        
+        guard let image = self.myImageView.image, let data = image.pngData() else {
+        return
+        }
+        
+        StorageManager.shared.uploadMenuPic(with: data, fileName: picLocUpload, completion: { result in
+            switch result {
+            case .success(let downloadURL):
+                print(downloadURL)
+            case .failure(let error):
+                print("Data yönetimi hatası. \(error)")
             }
         })
         

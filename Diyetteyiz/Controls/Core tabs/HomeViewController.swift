@@ -258,7 +258,7 @@ class HomeViewController: UIViewController {
     }
     
     func openMenu(_ model: MenuViewModel){
-        let vc = MenuViewController(with: model.dietitianBind, id: model.header)
+        let vc = MenuViewController(with: model.dietitianBind, id: model.header, picLoc: model.headerPicLoc)
         vc.title = "Menü"
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)

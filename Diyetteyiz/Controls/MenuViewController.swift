@@ -14,7 +14,12 @@ class MenuViewController: UIViewController {
         let info: String?
         let isActivated: Bool?
         let price: String?
+        let daysCount: Int?
+        let mealCount: Int?
+        let itemCount: Int?
     }
+    
+    private var picloc: String?
     
     private var menuData = [MenuViewModel]()
     private var menu = [[String : Any]]()
@@ -124,15 +129,29 @@ class MenuViewController: UIViewController {
         
     }
     
-    init(with dietitianEmail: String, id: String?) {
+    init(with dietitianEmail: String, id: String?, picLoc: String) {
         self.dietitianEmail = dietitianEmail
         self.id = id
+        self.picloc = picLoc
         super.init(nibName: nil ,bundle: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         getMenu(query: self.dietitianEmail!)
+        getPic()
+    }
+    
+    private func getPic() {
+        let picture = "menus/" + self.picloc! + ".png"
+        StorageManager.shared.downloadURL(for: picture, completion: { result in
+            switch result {
+            case .success(let url):
+                self.myImageView.sd_setImage(with: url, completed: nil)
+            case .failure(let error):
+                print("Failed to get download url: \(error)")
+            }
+        })
     }
     
     // MARK: Gettin Menu
@@ -155,23 +174,27 @@ class MenuViewController: UIViewController {
     }
     private func filterMenu(with term: String) {
         let results: [MenuViewModel] = menu.filter({
-            // FIXME: Filtreyi Düzelt (Sadece testte çalışıcak diğerlerinde çalışmicak!)
             guard let header = $0["header"],
                   header as? String == self.id else {
                     return false
             }
 
-            return (header as AnyObject).hasPrefix(self.id!.lowercased())
+            return (header as! String).hasPrefix(self.id!)
         }).compactMap({
-            guard let header = $0["header"], let info = $0["info"], let isActivated = $0["isActivated"], let price = $0["price"] else {
+            guard let header = $0["header"], let info = $0["info"], let isActivated = $0["isActivated"], let price = $0["price"], let daysCount = $0["daysCount"], let mealCount = $0["mealCount"], let itemCount = $0["itemCount"] else {
                 return nil
             }
 
-            return MenuViewModel(header: header as? String, info: info as? String, isActivated: isActivated as? Bool, price: price as? String)
+            return MenuViewModel(header: header as? String, info: info as? String, isActivated: isActivated as? Bool, price: price as? String, daysCount: daysCount as? Int, mealCount: mealCount as? Int, itemCount: itemCount as? Int)
         })
         self.menuData = results
         
         headerLabel.text = self.menuData[0].header
+        infoLabel.text = self.menuData[0].info
+        priceLabel.text = "Fiyat: " + self.menuData[0].price!
+        daysLabel.text = "Toplam: " + String(self.menuData[0].daysCount!) + "gün"
+        mealCountLabel.text =  "Öğün Sayısı: " + String(self.menuData[0].mealCount!)
+        productCountLabel.text = "Çeşit Sayısı: " + String(self.menuData[0].itemCount!)
     }
     
     override func viewDidLayoutSubviews() {

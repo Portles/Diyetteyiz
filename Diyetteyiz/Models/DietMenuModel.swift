@@ -13,6 +13,9 @@ struct DietModel: Codable {
     var price: String?
     var Days: [Day]?
     var isActivated: Bool?
+    var daysCount: Int?
+    var mealCount: Int?
+    var itemCount: Int?
 }
 
 struct Day: Codable {

@@ -125,7 +125,66 @@ class MenuViewController: UIViewController {
         view.addSubview(infoLabel)
         view.addSubview(buyButton)
         
+        buyButton.addTarget(self, action: #selector(didTapBuyButton), for: .touchUpInside)
+        
         view.backgroundColor = .systemBackground
+        
+    }
+    
+    @objc private func didTapBuyButton() {
+        presentWantToBuy()
+    }
+    
+    private func presentWantToBuy() {
+        let alert = UIAlertController(title: "Satın Alma", message: "Satın almak istediğinize emin misiniz?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Satın Al", style: .default, handler: {[weak self]_ in
+            self?.buyProduct()
+            
+        }))
+        alert.addAction(UIAlertAction(title: "Vazgeç", style: .destructive, handler: nil))
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func buyComplated() {
+        let alert = UIAlertController(title: "Satın Alma", message: "Satın alma başarılı satın alımlardan kontrol ediniz.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Tamam", style: .destructive, handler: nil))
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func buyProduct() {
+        if UserDefaults.standard.integer(forKey: "permission") == 2 {
+            return
+        }
+        
+        guard let dietitianEmail = self.dietitianEmail else {
+            return
+        }
+        let userEmail = UserDefaults.standard.string(forKey: "email")!
+        let nowDate = Date()
+        let dateString = DatabaseManager.dateFormatter.string(from: nowDate)
+        
+        let productId = dietitianEmail + userEmail + dateString
+        
+        let data = self.menuData[0]
+        DatabaseManager.shared.checkUserIsAllowToBuyProgram(completion: { succes in
+            if succes {
+                print("Kontol başarılı.")
+                print("Program alınabilir.")
+                DatabaseManager.shared.insertSoldProgram(with: data, programId: productId, dietitianEmail: dietitianEmail, completion: { succes in
+                    if succes {
+                        print("Kayıt başarılı program alındı.")
+                        self.buyComplated()
+                    }
+                })
+            } else {
+                print("Kontrol başarılı")
+                print("Kullanıcı program satın almaya uygun değil")
+            }
+        })
+        
+        
         
     }
     

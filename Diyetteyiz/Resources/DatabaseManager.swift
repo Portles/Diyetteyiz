@@ -68,61 +68,87 @@ extension DatabaseManager {
         let nowDate = Date()
         let dateString = DatabaseManager.dateFormatter.string(from: nowDate)
         database.child(user.safeEmail).setValue([
-            "name": user.name
-            ], withCompletionBlock: { [weak self]error, _ in
-                
-                guard let strongSelf = self else {
-                    return
-                }
-                
-                guard error == nil else {
-                    print("Database yazım hatası.")
-                    completion(false)
-                    return
-                }
-                strongSelf.database.child("\(user.safeEmail)/notifications").observeSingleEvent(of: .value, with: { [weak self]snapshot in
-                    if var userNotification = snapshot.value as? [[String: Any]] {
-                        let newElement = [
+            "name": user.name,
+            "canBuyProgram": true
+        ], withCompletionBlock: { [weak self]error, _ in
+            
+            guard let strongSelf = self else {
+                return
+            }
+            
+            guard error == nil else {
+                print("Database yazım hatası.")
+                completion(false)
+                return
+            }
+            strongSelf.database.child("\(user.safeEmail)/notifications").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                if var userNotification = snapshot.value as? [[String: Any]] {
+                    let newElement = [
+                        "header": "Kaydınız hazır",
+                        "info": "Artık program satın alabilirsiniz. 👍",
+                        "isRead": false,
+                        "time": dateString
+                    ] as [String : Any]
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    userNotification.append(newElement)
+                    strongSelf.database.child("\(user.safeEmail)/notifications").setValue(userNotification, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                } else {
+                    let newCollection: [[String: Any]] = [
+                        [
                             "header": "Kaydınız hazır",
                             "info": "Artık program satın alabilirsiniz. 👍",
                             "isRead": false,
                             "time": dateString
-                        ] as [String : Any]
-                        guard let strongSelf = self else {
+                        ]
+                    ]
+                    
+                    strongSelf.database.child("\(user.safeEmail)/notifications").setValue(newCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
                             return
                         }
-                        userNotification.append(newElement)
-                        strongSelf.database.child("\(user.safeEmail)/notifications").setValue(userNotification, withCompletionBlock: { error, _ in
-                            guard error == nil else {
-                                completion(false)
-                                return
-                            }
-                            completion(true)
-                        })
-                    } else {
-                        let newCollection: [[String: Any]] = [
-                            [
-                                "header": "Kaydınız hazır",
-                                "info": "Artık program satın alabilirsiniz. 👍",
-                                "isRead": false,
-                                "time": dateString
-                            ]
-                        ]
-                        
-                        strongSelf.database.child("\(user.safeEmail)/notifications").setValue(newCollection, withCompletionBlock: { error, _ in
-                            guard error == nil else {
-                                completion(false)
-                                return
-                            }
-                            completion(true)
-                        })
+                        completion(true)
+                    })
+                }
+            })
+            
+            
+            strongSelf.database.child("users").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                if var userCollection = snapshot.value as? [[String: Any]] {
+                    let newElement = [
+                        "name": user.name ,
+                        "surname": user.surname ,
+                        "email": user.safeEmail,
+                        "gender": user.gender ,
+                        "fat": user.fat ,
+                        "height": user.height ,
+                        "isPersonalInfoHidden": user.isPersonalInfoHidden ,
+                        "isCheckedLegal": user.isCheckedLegal ,
+                        "starRate": user.starRate ,
+                        "bio": user.bio
+                    ] as [String : Any]
+                    guard let strongSelf = self else {
+                        return
                     }
-                })
-                
-                
-                strongSelf.database.child("users").observeSingleEvent(of: .value, with: { [weak self]snapshot in
-                    if var userCollection = snapshot.value as? [[String: Any]] {
-                        let newElement = [
+                    userCollection.append(newElement)
+                    strongSelf.database.child("users").setValue(userCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                } else {
+                    let newCollection: [[String: Any]] = [
+                        [
                             "name": user.name ,
                             "surname": user.surname ,
                             "email": user.safeEmail,
@@ -132,44 +158,19 @@ extension DatabaseManager {
                             "isPersonalInfoHidden": user.isPersonalInfoHidden ,
                             "isCheckedLegal": user.isCheckedLegal ,
                             "starRate": user.starRate ,
-                            "bio": user.bio 
-                        ] as [String : Any]
-                        guard let strongSelf = self else {
+                            "bio": user.bio
+                        ]
+                    ]
+                    
+                    strongSelf.database.child("users").setValue(newCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
                             return
                         }
-                        userCollection.append(newElement)
-                        strongSelf.database.child("users").setValue(userCollection, withCompletionBlock: { error, _ in
-                            guard error == nil else {
-                                completion(false)
-                                return
-                            }
-                            completion(true)
-                        })
-                    } else {
-                        let newCollection: [[String: Any]] = [
-                            [
-                                "name": user.name ,
-                                "surname": user.surname ,
-                                "email": user.safeEmail,
-                                "gender": user.gender ,
-                                "fat": user.fat ,
-                                "height": user.height ,
-                                "isPersonalInfoHidden": user.isPersonalInfoHidden ,
-                                "isCheckedLegal": user.isCheckedLegal ,
-                                "starRate": user.starRate ,
-                                "bio": user.bio
-                            ]
-                        ]
-                        
-                        strongSelf.database.child("users").setValue(newCollection, withCompletionBlock: { error, _ in
-                            guard error == nil else {
-                                completion(false)
-                                return
-                            }
-                            completion(true)
-                        })
-                    }
-                })
+                        completion(true)
+                    })
+                }
+            })
         })
     }
     
@@ -355,7 +356,7 @@ extension DatabaseManager {
             }
             return nil
         }
-
+        
         let json = convertToDictionary(text: str!)
         
         
@@ -363,129 +364,237 @@ extension DatabaseManager {
         let safeMail = DatabaseManager.safeEmail(emailAdress: UserDefaults.standard.string(forKey: "email")!)
         database.child(safeMail).setValue([
             "name": ""
-            ], withCompletionBlock: { [weak self]error, _ in
-                
-                guard let strongSelf = self else {
-                    return
-                }
-                
-                guard error == nil else {
-                    print("Database yazım hatası.")
-                    completion(false)
-                    return
-                }
-                strongSelf.database.child("\(safeMail)/notifications").observeSingleEvent(of: .value, with: { [weak self]snapshot in
-                    if var userNotification = snapshot.value as? [[String: Any]] {
-                        let newElement = [
+        ], withCompletionBlock: { [weak self]error, _ in
+            
+            guard let strongSelf = self else {
+                return
+            }
+            
+            guard error == nil else {
+                print("Database yazım hatası.")
+                completion(false)
+                return
+            }
+            strongSelf.database.child("\(safeMail)/notifications").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                if var userNotification = snapshot.value as? [[String: Any]] {
+                    let newElement = [
+                        "header": "Diyet Programı",
+                        "info": "Program bize ulaştı kabul için beklemede kal. 👍",
+                        "isRead": false,
+                        "time": dateString
+                    ] as [String : Any]
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    userNotification.append(newElement)
+                    strongSelf.database.child("\(safeMail)/notifications").setValue(userNotification, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                } else {
+                    let newCollection: [[String: Any]] = [
+                        [
                             "header": "Diyet Programı",
                             "info": "Program bize ulaştı kabul için beklemede kal. 👍",
                             "isRead": false,
                             "time": dateString
-                        ] as [String : Any]
-                        guard let strongSelf = self else {
-                            return
-                        }
-                        userNotification.append(newElement)
-                        strongSelf.database.child("\(safeMail)/notifications").setValue(userNotification, withCompletionBlock: { error, _ in
-                            guard error == nil else {
-                                completion(false)
-                                return
-                            }
-                            completion(true)
-                        })
-                    } else {
-                        let newCollection: [[String: Any]] = [
-                            [
-                                "header": "Diyet Programı",
-                                "info": "Program bize ulaştı kabul için beklemede kal. 👍",
-                                "isRead": false,
-                                "time": dateString
-                            ]
                         ]
-                        
-                        strongSelf.database.child("\(safeMail)/notifications").setValue(newCollection, withCompletionBlock: { error, _ in
-                            guard error == nil else {
-                                completion(false)
-                                return
-                            }
-                            completion(true)
-                        })
-                    }
-                })
-                
-                // MARK: İlk Kısım Insert
-                strongSelf.database.child("\(safeMail)/products").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                    ]
                     
-                    if var userCollection = snapshot.value as? [[String: Any]] {
-                        guard let strongSelf = self else {
+                    strongSelf.database.child("\(safeMail)/notifications").setValue(newCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
                             return
                         }
-                        userCollection.append(json!)
-                        strongSelf.database.child("\(safeMail)/products").setValue(userCollection, withCompletionBlock: { error, _ in
-                            guard error == nil else {
-                                completion(false)
-                                return
-                            }
-                            completion(true)
-                        })
-                    } else {
-                        let newCollection: [[String: Any]] = [
-                            json!
-                        ]
-                        strongSelf.database.child("\(safeMail)/products").setValue(newCollection, withCompletionBlock: { error, _ in
-                            guard error == nil else {
-                                completion(false)
-                                return
-                            }
-                            completion(true)
-                        })
+                        completion(true)
+                    })
+                }
+            })
+            
+            // MARK: İlk Kısım Insert
+            strongSelf.database.child("\(safeMail)/products").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                
+                if var userCollection = snapshot.value as? [[String: Any]] {
+                    guard let strongSelf = self else {
+                        return
                     }
-                })
-                // MARK: Menus kısmına yazma
-                strongSelf.database.child("menus").observeSingleEvent(of: .value, with: { [weak self]snapshot in
-                    if var userNotification = snapshot.value as? [[String: Any]] {
-                        let newElement = [
+                    userCollection.append(json!)
+                    strongSelf.database.child("\(safeMail)/products").setValue(userCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                } else {
+                    let newCollection: [[String: Any]] = [
+                        json!
+                    ]
+                    strongSelf.database.child("\(safeMail)/products").setValue(newCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                }
+            })
+            // MARK: Menus kısmına yazma
+            strongSelf.database.child("menus").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                if var userNotification = snapshot.value as? [[String: Any]] {
+                    let newElement = [
+                        "header": miniProduct.header!,
+                        "info": miniProduct.info!,
+                        "days": miniProduct.days!,
+                        "price": miniProduct.price!,
+                        "dietitianBind": safeMail,
+                        "headerPicLoc": miniProduct.headerPicLoc!
+                    ] as [String : Any]
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    userNotification.append(newElement)
+                    strongSelf.database.child("menus").setValue(userNotification, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                } else {
+                    let newCollection: [[String: Any]] = [
+                        [
                             "header": miniProduct.header!,
                             "info": miniProduct.info!,
                             "days": miniProduct.days!,
                             "price": miniProduct.price!,
                             "dietitianBind": safeMail,
                             "headerPicLoc": miniProduct.headerPicLoc!
-                        ] as [String : Any]
-                        guard let strongSelf = self else {
+                        ]
+                    ]
+                    
+                    strongSelf.database.child("menus").setValue(newCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
                             return
                         }
-                        userNotification.append(newElement)
-                        strongSelf.database.child("menus").setValue(userNotification, withCompletionBlock: { error, _ in
-                            guard error == nil else {
-                                completion(false)
-                                return
-                            }
-                            completion(true)
-                        })
-                    } else {
-                        let newCollection: [[String: Any]] = [
-                            [
-                                "header": miniProduct.header!,
-                                "info": miniProduct.info!,
-                                "days": miniProduct.days!,
-                                "price": miniProduct.price!,
-                                "dietitianBind": safeMail,
-                                "headerPicLoc": miniProduct.headerPicLoc!
-                            ]
-                        ]
-                        
-                        strongSelf.database.child("menus").setValue(newCollection, withCompletionBlock: { error, _ in
-                            guard error == nil else {
-                                completion(false)
-                                return
-                            }
-                            completion(true)
-                        })
-                    }
-                })
+                        completion(true)
+                    })
+                }
+            })
         })
     }
+    
+    // MARK: - CHECK PROGRAM AVABİLİTY
+    public func checkUserIsAllowToBuyProgram(completion: @escaping (Bool) -> Void){
+        let buyyerId = UserDefaults.standard.string(forKey: "email")!
+        database.child("\(buyyerId)/canBuyProgram").observeSingleEvent(of: .value, with: { (snapshot) in
+            let value = snapshot.value as? NSDictionary
+            let program = value?["canBuyProgram"] as? Bool ?? false
+
+            if program == true {
+                completion(true)
+            } else {
+                completion(false)
+            }
+            }) { (error) in
+                print(error.localizedDescription)
+                completion(false)
+        }
+    }
+    
+    // MARK: - INSERTSOLDPROGRAM
+    public func insertSoldProgram(with program: MenuViewController.MenuViewModel, programId: String, dietitianEmail: String, completion: @escaping (Bool) -> Void){
+        let buyyerId = UserDefaults.standard.string(forKey: "email")!
+        let nowDate = Date()
+        let dateString = DatabaseManager.dateFormatter.string(from: nowDate)
+        
+        var modifiedDate = Calendar.current.date(byAdding: .day, value: 1, to: nowDate)!
+        modifiedDate = Calendar.current.date(bySetting: .hour, value: 00, of: modifiedDate)!
+        let startDate = Calendar.current.date(bySetting: .minute, value: 00, of: modifiedDate)!
+        let startDateString = DatabaseManager.dateFormatter.string(from: startDate)
+        
+        database.child("\(buyyerId)/ongoingProduct").setValue([
+            "isHaveOngoingProduct": true ,
+            "whichProduct": program.header!,
+            "startDate": startDateString,
+            "fromWho": dietitianEmail,
+            "lastRecord": [
+                "leftDays": program.daysCount!,
+                "succesRate": 0,
+                "nextDay": 1
+            ]
+        ], withCompletionBlock: { [weak self]error, _ in
+            
+            guard let strongSelf = self else {
+                return
+            }
+            
+            guard error == nil else {
+                print("Database yazım hatası.")
+                completion(false)
+                return
+            }
+            strongSelf.database.child("\(buyyerId)/notifications").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                if var userNotification = snapshot.value as? [[String: Any]] {
+                    let newElement = [
+                        "header": "Diyet Satın alındı",
+                        "info": "Saat 00.00'da diyetine başlayabilirsin.",
+                        "isRead": false,
+                        "time": dateString
+                    ] as [String : Any]
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    userNotification.append(newElement)
+                    strongSelf.database.child("\(buyyerId)/notifications").setValue(userNotification, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                } else {
+                    let newCollection: [[String: Any]] = [
+                        [
+                            "header": "Diyet Satın alındı",
+                            "info": "Saat 00.00'da diyetine başlayabilirsin.",
+                            "isRead": false,
+                            "time": dateString
+                        ]
+                    ]
+                    
+                    strongSelf.database.child("\(buyyerId)/notifications").setValue(newCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                }
+            })
+            
+            strongSelf.database.child("\(programId)").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                let newElement = [
+                    "createDate": dateString
+                ] as [String : Any]
+                guard let strongSelf = self else {
+                    return
+                }
+                strongSelf.database.child("\(programId)").setValue(newElement, withCompletionBlock: { error, _ in
+                    guard error == nil else {
+                        completion(false)
+                        return
+                    }
+                    completion(true)
+                })
+            })
+        })
+    }
+    
     
     public func getDietitianMenu(with dietitianEmail: String ,completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
         database.child("\(dietitianEmail)/products").observeSingleEvent(of: .value, with: { snapshot in
@@ -545,7 +654,7 @@ extension DatabaseManager {
         frmttr.locale = .current
         return frmttr
     }()
-
+    
 }
 
 struct DiyetteyizUser {

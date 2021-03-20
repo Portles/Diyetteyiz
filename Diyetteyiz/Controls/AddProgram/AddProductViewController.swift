@@ -160,7 +160,7 @@ class AddProductViewController: UIViewController {
         AddProductViewController.product.isActivated = false
         AddProductViewController.product.daysCount = AddDayViewController.Days
         AddProductViewController.product.mealCount = AddMealViewController.Meals
-        AddProductViewController.product.itemcount = AddItemViewController.items
+        AddProductViewController.product.itemCount = AddItemViewController.items
         
         let email = DatabaseManager.safeEmail(emailAdress: UserDefaults.standard.string(forKey: "email")!)
         let picLoc = "\(email)" + String(Int.random(in: 0...100))

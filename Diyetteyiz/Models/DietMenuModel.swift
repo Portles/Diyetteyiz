@@ -16,6 +16,7 @@ struct DietModel: Codable {
     var daysCount: Int?
     var mealCount: Int?
     var itemCount: Int?
+    var picLoc: String?
 }
 
 struct Day: Codable {

@@ -161,11 +161,12 @@ class MenuViewController: UIViewController {
         guard let dietitianEmail = self.dietitianEmail else {
             return
         }
-        let userEmail = UserDefaults.standard.string(forKey: "email")!
+        let userNotSafeEmail = UserDefaults.standard.string(forKey: "email")!
+        let userEmail = DatabaseManager.safeEmail(emailAdress: userNotSafeEmail)
         let nowDate = Date()
         let dateString = DatabaseManager.dateFormatter.string(from: nowDate)
         
-        let productId = dietitianEmail + userEmail + dateString
+        let productId = dietitianEmail + "_" + userEmail + dateString
         
         let data = self.menuData[0]
         DatabaseManager.shared.checkUserIsAllowToBuyProgram(completion: { succes in
@@ -179,13 +180,10 @@ class MenuViewController: UIViewController {
                     }
                 })
             } else {
-                print("Kontrol başarılı")
-                print("Kullanıcı program satın almaya uygun değil")
+                print("Kontrol başarılı.")
+                print("Kullanıcı program satın almaya uygun değil.")
             }
         })
-        
-        
-        
     }
     
     init(with dietitianEmail: String, id: String?, picLoc: String) {

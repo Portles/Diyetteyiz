@@ -334,6 +334,40 @@ extension DatabaseManager {
             }
         }
     }
+    // MARK: - GET PRODUCT DATA
+    public func getDietitianProductData(with dietitian: String,completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
+        let email = DatabaseManager.safeEmail(emailAdress: dietitian)
+        database.child("\(email)/products").observeSingleEvent(of: .value, with: { snapshot in
+            if let userProductData = snapshot.value as? [[String: Any]] {
+                completion(.success(userProductData))
+            } else {
+                completion(.failure(DatabaseError.dataCekmeHatasi))
+            }
+        })
+    }
+    
+    // MARK: - SATIN ALIMLAR LOAD
+    public func getOngoingProduct(with dietitian: String,completion: @escaping (Result<NSDictionary, Error>) -> Void) {
+        let email = DatabaseManager.safeEmail(emailAdress: dietitian)
+        database.child("\(email)/ongoingProduct").observeSingleEvent(of: .value, with: { snapshot in
+            if let userProductData = snapshot.value as? NSDictionary {
+                completion(.success(userProductData))
+            } else {
+                completion(.failure(DatabaseError.dataCekmeHatasi))
+            }
+        })
+    }
+    
+    // MARK: - DİYET PROGRAMI LOAD
+    public func getFullDietProgram(with dietId: String,completion: @escaping (Result<[String: Any], Error>) -> Void) {
+        database.child("ongoingproducts").observeSingleEvent(of: .value, with: { snapshot in
+            if let userProductData = snapshot.value as? [String: Any] {
+                completion(.success(userProductData))
+            } else {
+                completion(.failure(DatabaseError.dataCekmeHatasi))
+            }
+        })
+    }
     
     // MARK: - Diyet Programı Ekleme
     
@@ -490,8 +524,9 @@ extension DatabaseManager {
     
     // MARK: - CHECK PROGRAM AVABİLİTY
     public func checkUserIsAllowToBuyProgram(completion: @escaping (Bool) -> Void){
-        let buyyerId = UserDefaults.standard.string(forKey: "email")!
-        database.child("\(buyyerId)/canBuyProgram").observeSingleEvent(of: .value, with: { (snapshot) in
+        let buyyerEmail = UserDefaults.standard.string(forKey: "email")!
+        let buyyerId = DatabaseManager.safeEmail(emailAdress: buyyerEmail)
+        database.child("\(buyyerId)").observeSingleEvent(of: .value, with: { (snapshot) in
             let value = snapshot.value as? NSDictionary
             let program = value?["canBuyProgram"] as? Bool ?? false
 
@@ -508,7 +543,8 @@ extension DatabaseManager {
     
     // MARK: - INSERTSOLDPROGRAM
     public func insertSoldProgram(with program: MenuViewController.MenuViewModel, programId: String, dietitianEmail: String, completion: @escaping (Bool) -> Void){
-        let buyyerId = UserDefaults.standard.string(forKey: "email")!
+        let buyyerEmail = UserDefaults.standard.string(forKey: "email")!
+        let buyyerId = DatabaseManager.safeEmail(emailAdress: buyyerEmail)
         let nowDate = Date()
         let dateString = DatabaseManager.dateFormatter.string(from: nowDate)
         
@@ -577,24 +613,78 @@ extension DatabaseManager {
                 }
             })
             
-            strongSelf.database.child("\(programId)").observeSingleEvent(of: .value, with: { [weak self]snapshot in
-                let newElement = [
-                    "createDate": dateString
-                ] as [String : Any]
-                guard let strongSelf = self else {
-                    return
-                }
-                strongSelf.database.child("\(programId)").setValue(newElement, withCompletionBlock: { error, _ in
+            strongSelf.database.child("ongoingPrograms").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                if var userNotification = snapshot.value as? [[String: Any]] {
+                    let newElement = [
+                        "\(programId)": [
+                            "createDate": dateString
+                        ]
+                    ] as [String : Any]
+                    guard let strongSelf = self else {
+                        return
+                    }
+                userNotification.append(newElement)
+                strongSelf.database.child("ongoingPrograms").setValue(userNotification, withCompletionBlock: { error, _ in
                     guard error == nil else {
                         completion(false)
                         return
                     }
                     completion(true)
                 })
+            } else {
+                let newCollection: [[String: Any]] = [
+                    [
+                        "createDate": dateString
+                    ]
+                ]
+                strongSelf.database.child("ongoingPrograms").setValue(newCollection, withCompletionBlock: { error, _ in
+                    guard error == nil else {
+                        completion(false)
+                        return
+                    }
+                        completion(true)
+                    })
+                }
+            })
+            
+            strongSelf.database.child("\(buyyerId)/canBuyProgram").setValue(false)
+            
+            strongSelf.database.child("\(dietitianEmail)/customers").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                if var userNotification = snapshot.value as? [[String: Any]] {
+                    let newElement = [
+                        "soldTo": buyyerId,
+                        "id": programId
+                    ] as [String : Any]
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    userNotification.append(newElement)
+                    strongSelf.database.child("\(dietitianEmail)/customers").setValue(userNotification, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                } else {
+                    let newCollection: [[String: Any]] = [
+                        [
+                            "soldTo": buyyerId,
+                            "id": programId
+                        ]
+                    ]
+                    
+                    strongSelf.database.child("\(dietitianEmail)/customers").setValue(newCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                }
             })
         })
     }
-    
     
     public func getDietitianMenu(with dietitianEmail: String ,completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
         database.child("\(dietitianEmail)/products").observeSingleEvent(of: .value, with: { snapshot in
@@ -604,6 +694,22 @@ extension DatabaseManager {
             }
             completion(.success(value))
         })
+    }
+    
+    public func checkDidBuyProduct(with userEmail: String ,completion: @escaping (Bool) -> Void) {
+        database.child("\(userEmail)/ongoingProduct").observeSingleEvent(of: .value, with: { snapshot in
+            let value = snapshot.value as? NSDictionary
+            let program = value?["isHaveOngoingProduct"] as? Bool ?? false
+
+            if program == true {
+                completion(true)
+            } else {
+                completion(false)
+            }
+            }) { (error) in
+                print(error.localizedDescription)
+                completion(false)
+        }
     }
     
     public func getAllUsers(completion: @escaping (Result<[[String: Any]], Error>) -> Void) {

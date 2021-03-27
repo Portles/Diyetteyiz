@@ -7,23 +7,364 @@
 
 import UIKit
 
+struct OngoingProduct: Codable {
+    var fromWho: String?
+    var isHaveOngoingProduct: Bool?
+    var lastRecord: LastRecord?
+    var startDate, whichProduct, picLoc: String?
+}
+
+struct LastRecord: Codable {
+    var leftDays, nextDay, succesRate: Int?
+}
+
+// MARK: - Product
+struct Product: Codable {
+    var days: [Day]?
+    var daysCount: Int?
+    var header, info: String?
+    var isActivated: Bool?
+    var itemCount, mealCount: Int?
+    var price: String?
+    var picLoc: String?
+
+    enum CodingKeys: String, CodingKey {
+        case days = "Days"
+        case daysCount, header, info, isActivated, itemCount, mealCount, price
+    }
+}
+
 class ProductsViewController: UIViewController {
 
+    private var productData = Product()
+    public var productCompletion: ((Product) -> (Void))?
+    private var ongProduct = OngoingProduct()
+    public var ongoingProductCompletion: ((OngoingProduct) -> (Void))?
+    
+    private var productdata = [[String: Any]]()
+    private var ongoingproduct = [String: Any]()
+    private var hasFetched = false
+    
+    private let headerView: UIView = {
+        let header = UIView()
+        header.layer.masksToBounds = true
+        let backgoundImageView = UIImageView(image: UIImage(named: "upperimage"))
+        header.addSubview(backgoundImageView)
+        header.layer.zPosition = -1
+        return header
+    }()
+    
+    private let myImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        
+        imageView.layer.borderWidth = 1
+        imageView.layer.borderColor = UIColor.black.cgColor
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = 10
+        imageView.backgroundColor = .black
+        return imageView
+    }()
+    
+    private let headerLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        label.text = "BAŞLIK"
+        return label
+    }()
+    
+    private let subscriptionButton: UIButton = {
+       let button = UIButton()
+        button.setImage(UIImage(systemName: "gear"), for: .normal)
+        return button
+    }()
+    
+    private let subscriptionLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 20, weight: .light)
+        label.text = "Ayarlar"
+        return label
+    }()
+    
+    private let priceLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 20)
+        label.text = "Fiyat"
+        return label
+    }()
+    
+    private let dietitianNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 20)
+        label.text = "Diyetisyen İsmi"
+        return label
+    }()
+    
+    private let progressPercentLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 24)
+        label.text = "İlerleme %"
+        return label
+    }()
+    
+    private let todaysButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Bu Günün Menüsü", for: .normal)
+        button.backgroundColor = .systemGreen
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.layer.masksToBounds = true
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        return button
+    }()
+    
+    private let nextReportTimeLeftLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 24)
+        label.text = "Gün kaldı"
+        return label
+    }()
+    
+    private let todaysReportButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Günlük Raporu Tamamla", for: .normal)
+        button.backgroundColor = .systemGreen
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.layer.masksToBounds = true
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        return button
+    }()
+    
+    private let progressLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 24)
+        label.text = "DURUM: (DEVAM,İPTAL)"
+        return label
+    }()
+    
+    private let seeRecordsButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Geçmiş Günlük Kayıtlar", for: .normal)
+        button.backgroundColor = .systemGreen
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.layer.masksToBounds = true
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        return button
+    }()
+    
+    private let noResultLabel: UILabel = {
+       let label = UILabel()
+        label.isHidden = true
+        label.text = "Diyet Satın Alınmamış"
+        label.textAlignment = .center
+        label.textColor = .systemGreen
+        label.font = .systemFont(ofSize: 21, weight: .medium)
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.insertSubview(noResultLabel, aboveSubview: headerView)
+        view.addSubview(headerView)
+        view.addSubview(myImageView)
+        view.addSubview(headerLabel)
+        view.addSubview(subscriptionButton)
+        view.addSubview(subscriptionLabel)
+        view.addSubview(priceLabel)
+        view.addSubview(dietitianNameLabel)
+        view.addSubview(progressLabel)
+        view.addSubview(todaysButton)
+        view.addSubview(nextReportTimeLeftLabel)
+        view.addSubview(todaysReportButton)
+        view.addSubview(progressPercentLabel)
+        view.addSubview(seeRecordsButton)
+        
         navigationItem.title = "Satın Alımlar"
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    override func viewDidAppear(_ animated: Bool) {
+        hide()
+        
+        checkBuyedBefore()
     }
-    */
+    
+    private func checkBuyedBefore() {
+        let email = UserDefaults.standard.string(forKey: "email")!
+        let safeEmail = DatabaseManager.safeEmail(emailAdress: email)
+        
+        if UserDefaults.standard.integer(forKey: "permission") == 1 {
+            DatabaseManager.shared.checkDidBuyProduct(with: safeEmail, completion: { succes in
+                if succes == true {
+                    self.viewProgram()
+                    DatabaseManager.shared.getOngoingProduct(with: safeEmail, completion: { result in
+                        switch result {
+                        case .success(let ongoingProduct):
+                            do {
+                                let data = try JSONSerialization.data(withJSONObject: ongoingProduct, options: .prettyPrinted)
+
+                                let decoder = JSONDecoder()
+                                do {
+                                    let customer = try decoder.decode(OngoingProduct.self, from: data)
+                                    print(customer)
+                                    self.ongProduct = customer
+                                    self.fillInfo()
+                                    
+                                    DatabaseManager.shared.getDietitianProductData(with: customer.fromWho!, completion: { [weak self]result in
+                                        switch result {
+                                        case .success(let productCol):
+                                            self?.hasFetched = true
+                                            self?.productdata = productCol
+                                            self?.filterProduct(with: customer.whichProduct!)
+                                            self?.fillInfoSecondPhase()
+                                            break
+                                        case .failure(let error):
+                                            print("Diyetisyen bilgilerine erişilemedi: \(error)")
+                                        }
+                                    })
+                                    
+                                    break
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
+                            } catch let parsingError {
+                                print("Error", parsingError)
+                            }
+                            
+                        case .failure(let error):
+                            print("Diyetisyen bilgilerine erişilemedi: \(error)")
+                        }
+                    })
+                } else {
+                    print("Program alınmamış")
+                }
+            })
+        } else {
+            print("Diyetisyensin")
+            hide()
+            noResultLabel.text = "Diyetisyensin ;)"
+        }
+    }
+    
+    func filterProduct(with term: String) {
+        let results: [Product] = productdata.filter({
+            guard let email = $0["header"],
+                  email as! String == term else {
+                    return false
+            }
+            
+            return (term as AnyObject).hasPrefix(term.lowercased())
+        }).compactMap({
+            guard let days = $0["Days"], let daysCount = $0["daysCount"], let header = $0["header"], let info = $0["info"], let isActivated = $0["isActivated"], let itemCount = $0["itemCount"], let mealCount = $0["mealCount"], let price = $0["price"], let picLoc = $0["picLoc"] else {
+                return nil
+            }
+            return Product(days: days as? [Day], daysCount: daysCount as? Int, header: header as? String, info: info as? String, isActivated: isActivated as? Bool, itemCount: itemCount as? Int, mealCount: mealCount as? Int, price: price as? String, picLoc: picLoc as? String)
+        })
+        self.productData = results[0]
+    }
+    
+    private func getPic() {
+        let picture = "menus/" + self.productData.picLoc! + ".png"
+        StorageManager.shared.downloadURL(for: picture, completion: { result in
+            switch result {
+            case .success(let url):
+                self.myImageView.sd_setImage(with: url, completed: nil)
+            case .failure(let error):
+                print("Failed to get download url: \(error)")
+            }
+        })
+    }
+    
+    private func fillInfoSecondPhase() {
+        priceLabel.text = "Fiyat: " + productData.price! + "₺"
+        getPic()
+    }
+    
+    private func fillInfo() {
+        headerLabel.text = ongProduct.whichProduct
+        nextReportTimeLeftLabel.text = "Kalan gün: " + String((ongProduct.lastRecord?.leftDays)!)
+        progressPercentLabel.text = "İlerleme: %" + String((ongProduct.lastRecord?.succesRate)!)
+        if ongProduct.isHaveOngoingProduct ?? false {
+            progressLabel.text = "Program durumu: Devam"
+        } else {
+            progressLabel.text = "Program durumu: İptal"
+        }
+        dietitianNameLabel.text = DatabaseManager.notSafeEmail(emailAdress: ongProduct.fromWho!)
+    }
+    
+    private func hide() {
+        headerView.isHidden = true
+        myImageView.isHidden = true
+        headerLabel.isHidden = true
+        subscriptionButton.isHidden = true
+        subscriptionLabel.isHidden = true
+        priceLabel.isHidden = true
+        dietitianNameLabel.isHidden = true
+        progressLabel.isHidden = true
+        todaysButton.isHidden = true
+        nextReportTimeLeftLabel.isHidden = true
+        todaysReportButton.isHidden = true
+        progressPercentLabel.isHidden = true
+        seeRecordsButton.isHidden = true
+        
+        noResultLabel.isHidden = false
+    }
+    
+    private func viewProgram() {
+        headerView.isHidden = false
+        myImageView.isHidden = false
+        headerLabel.isHidden = false
+        subscriptionButton.isHidden = false
+        subscriptionLabel.isHidden = false
+        priceLabel.isHidden = false
+        dietitianNameLabel.isHidden = false
+        progressLabel.isHidden = false
+        todaysButton.isHidden = false
+        nextReportTimeLeftLabel.isHidden = false
+        todaysReportButton.isHidden = false
+        progressPercentLabel.isHidden = false
+        seeRecordsButton.isHidden = false
+        
+        noResultLabel.isHidden = true
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        noResultLabel.frame = view.bounds
+        
+        headerView.frame = CGRect(x: 0, y: 0.0, width: view.width+100, height: view.height/4.0)
+        myImageView.frame = CGRect(x: 30, y: 100, width: 150, height: 150)
+        headerLabel.frame = CGRect(x: myImageView.right + 50, y: 120, width: 300, height: 60)
+        
+        subscriptionButton.frame = CGRect(x: 40, y: myImageView.bottom + 10, width: 25, height: 25)
+        subscriptionLabel.frame = CGRect(x: 30, y: subscriptionButton.bottom + 5, width: 75, height: 52)
+        
+        priceLabel.frame = CGRect(x: myImageView.right + 50, y: headerLabel.bottom + 30, width: 150, height: 72)
+        dietitianNameLabel.frame = CGRect(x: priceLabel.left - 50, y: priceLabel.bottom + 5, width: 300, height: 72)
+        
+        progressLabel.frame = CGRect(x: 30, y: subscriptionLabel.bottom+40, width: view.width-60, height: 52)
+        todaysButton.frame = CGRect(x: 30, y: progressLabel.bottom+10, width: view.width-60, height: 52)
+        nextReportTimeLeftLabel.frame = CGRect(x: 30, y: todaysButton.bottom+40, width: view.width-60, height: 52)
+        todaysReportButton.frame = CGRect(x: 30, y: nextReportTimeLeftLabel.bottom+10, width: view.width-60, height: 52)
+        progressPercentLabel.frame = CGRect(x: 30, y: todaysReportButton.bottom+40, width: view.width-60, height: 52)
+        seeRecordsButton.frame = CGRect(x: 30, y: progressPercentLabel.bottom+10, width: view.width-60, height: 52)
+        
+        configureHeaderView()
+    }
+    
+    private func configureHeaderView(){
+        guard headerView.subviews.count == 1 else{
+            return
+        }
+        guard let backgoundView = headerView.subviews.first else {
+            return
+        }
+        backgoundView.frame = headerView.bounds
+        
+        backgoundView.layer.zPosition = 1
+    }
 
 }

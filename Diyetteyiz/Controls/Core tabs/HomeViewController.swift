@@ -221,6 +221,7 @@ class HomeViewController: UIViewController {
             return SearchResult(email: email, name: name, info: "", ppUrl: "")
         })
         self.results = results
+        
     }
     func filterUser() {
         let results: [SearchResult] = users.compactMap({
@@ -309,7 +310,7 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
             let model = userResults[indexPath.row]
             openConversation(model)
         } else {
-            userCollectionView?.deselectItem(at: indexPath, animated: true)
+            menuCollectionView?.deselectItem(at: indexPath, animated: true)
             let model = menuResults[indexPath.row]
             openMenu(model)
         }

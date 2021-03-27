@@ -168,6 +168,8 @@ class AddProductViewController: UIViewController {
         let smallInfo: String = info.prefix(20) + "..."
         let dayCount = String(AddProductViewController.product.Days?.count ?? 0)
         
+        AddProductViewController.product.picLoc = picLoc
+        
         let searchProduct = MenuViewModelDiet(header: header, info: smallInfo, price: price, dietitianBind: email, days: Int(dayCount), headerPicLoc: picLoc)
         
         DatabaseManager.shared.InsertDietitianProgram(with: AddProductViewController.product, miniProduct: searchProduct, completion: { succes in

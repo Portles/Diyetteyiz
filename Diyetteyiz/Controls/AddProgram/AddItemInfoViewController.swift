@@ -9,6 +9,8 @@ import UIKit
 
 class AddItemInfoViewController: UIViewController {
     
+    private let source = ["MG", "ML", "ADET", "Tatlı Kaşığı"]
+    
     private let itemField: UITextField = {
         let field = UITextField()
         field.autocapitalizationType = .none
@@ -70,6 +72,11 @@ class AddItemInfoViewController: UIViewController {
         return field
     }()
     
+    private let picker: UIPickerView = {
+       let picker = UIPickerView()
+        return picker
+    }()
+    
     private let confirmButton: UIButton = {
         let button = UIButton()
         button.setTitle("Onayla", for: .normal)
@@ -103,11 +110,33 @@ class AddItemInfoViewController: UIViewController {
         view.addSubview(confirmButton)
         view.addSubview(cancelButton)
         
+        
+        picker.delegate = self
+        picker.dataSource = self
+        
+        itemTypeField.inputView = picker
+        
+        createToolbar()
+        
         confirmButton.addTarget(self, action: #selector(addItem), for: .touchUpInside)
         cancelButton.addTarget(self, action: #selector(deleteItem), for: .touchUpInside)
         
         view.backgroundColor = .systemBackground
         
+    }
+    
+    func createToolbar() {
+        let toolBar = UIToolbar()
+        toolBar.sizeToFit()
+        
+        let doneButton = UIBarButtonItem(title: "Tamam", style: .plain, target: self, action: #selector(AddItemInfoViewController.dismissPicker))
+        toolBar.setItems([doneButton], animated: false)
+        
+        toolBar.isUserInteractionEnabled = true
+        itemTypeField.inputAccessoryView = toolBar
+    }
+    @objc func dismissPicker() {
+        view.endEditing(true)
     }
     
     override func viewDidLayoutSubviews() {
@@ -138,4 +167,22 @@ class AddItemInfoViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
+}
+
+extension AddItemInfoViewController: UIPickerViewDelegate, UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+            return 1
+        }
+        
+        func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+            return source.count
+        }
+        
+        func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+             return source[row]
+        }
+        
+        func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+            return itemTypeField.text = source[row]
+        }
 }

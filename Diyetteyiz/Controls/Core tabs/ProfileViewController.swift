@@ -122,20 +122,25 @@ class ProfileViewController: UIViewController {
         view.addSubview(followButton)
         view.addSubview(tableView)
         
+        
+        
+        followButton.addTarget(self, action: #selector(didTapFollowButton), for: .touchUpInside)
+        
+        navigationItem.title = "Profil"
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        fillProfile()
+        configureNavigationBar()
+        getPP()
+        
         if UserDefaults.standard.integer(forKey: "permission") == 2 {
             tableView.isHidden = false
             tableView.delegate = self
             tableView.dataSource = self
             configureAddMenuBar()
         }
-        
-        configureNavigationBar()
-        
-        getPP()
-        
-        followButton.addTarget(self, action: #selector(didTapFollowButton), for: .touchUpInside)
-        
-        navigationItem.title = "Profil"
     }
     
     private func getPP() {
@@ -166,10 +171,7 @@ class ProfileViewController: UIViewController {
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        fillProfile()
-    }
+    
     
     private func fillProfile() {
         let email = UserDefaults.standard.string(forKey: "email") ?? ""

@@ -20,7 +20,7 @@ struct LastRecord: Codable {
 
 // MARK: - Product
 struct Product: Codable {
-    var days: [Day]?
+    var Days: [Day]?
     var daysCount: Int?
     var header, info: String?
     var isActivated: Bool?
@@ -29,14 +29,13 @@ struct Product: Codable {
     var picLoc: String?
 
     enum CodingKeys: String, CodingKey {
-        case days = "Days"
-        case daysCount, header, info, isActivated, itemCount, mealCount, price
+        case daysCount, header, info, isActivated, itemCount, mealCount, price, Days, picLoc
     }
 }
 
 class ProductsViewController: UIViewController {
 
-    private var productData = Product()
+    public static var productData = Product()
     public var productCompletion: ((Product) -> (Void))?
     private var ongProduct = OngoingProduct()
     public var ongoingProductCompletion: ((OngoingProduct) -> (Void))?
@@ -183,7 +182,15 @@ class ProductsViewController: UIViewController {
         view.addSubview(progressPercentLabel)
         view.addSubview(seeRecordsButton)
         
+        todaysButton.addTarget(self, action: #selector(didTapTodaysButton), for: .touchUpInside)
+        
         navigationItem.title = "Satın Alımlar"
+    }
+    
+    @objc private func didTapTodaysButton() {
+        let day = Int(ProductsViewController.productData.daysCount!) - Int((ongProduct.lastRecord?.leftDays!)!)
+        let vc = TodaysMealViewController(with: ProductsViewController.productData, whichDay: day)
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -256,18 +263,29 @@ class ProductsViewController: UIViewController {
                     return false
             }
             
-            return (term as AnyObject).hasPrefix(term.lowercased())
+            return (term as AnyObject).hasPrefix(term)
         }).compactMap({
-            guard let days = $0["Days"], let daysCount = $0["daysCount"], let header = $0["header"], let info = $0["info"], let isActivated = $0["isActivated"], let itemCount = $0["itemCount"], let mealCount = $0["mealCount"], let price = $0["price"], let picLoc = $0["picLoc"] else {
-                return nil
+            do {
+            
+                let data = try JSONSerialization.data(withJSONObject: $0, options: .prettyPrinted)
+
+                let decoder = JSONDecoder()
+            
+                let customer = try decoder.decode(Product.self, from: data)
+                print(customer)
+                return customer
+            } catch {
+                print(error.localizedDescription)
             }
-            return Product(days: days as? [Day], daysCount: daysCount as? Int, header: header as? String, info: info as? String, isActivated: isActivated as? Bool, itemCount: itemCount as? Int, mealCount: mealCount as? Int, price: price as? String, picLoc: picLoc as? String)
+            return nil
         })
-        self.productData = results[0]
+        print(results)
+        ProductsViewController.productData = results[0]
+        print(ProductsViewController.productData)
     }
     
     private func getPic() {
-        let picture = "menus/" + self.productData.picLoc! + ".png"
+        let picture = "menus/" + ProductsViewController.productData.picLoc! + ".png"
         StorageManager.shared.downloadURL(for: picture, completion: { result in
             switch result {
             case .success(let url):
@@ -279,7 +297,7 @@ class ProductsViewController: UIViewController {
     }
     
     private func fillInfoSecondPhase() {
-        priceLabel.text = "Fiyat: " + productData.price! + "₺"
+        priceLabel.text = "Fiyat: " + ProductsViewController.productData.price! + "₺"
         getPic()
     }
     

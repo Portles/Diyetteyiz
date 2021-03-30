@@ -22,7 +22,7 @@
 		CA46DC4D260FCB41006ACA62 /* CheckMealViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA46DC4C260FCB41006ACA62 /* CheckMealViewController.swift */; };
 		CA46DC52260FCB55006ACA62 /* ProductRecordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA46DC51260FCB55006ACA62 /* ProductRecordsViewController.swift */; };
 		CA46DC5C260FD4E9006ACA62 /* MealTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA46DC5B260FD4E9006ACA62 /* MealTableViewCell.swift */; };
-		CA46DC64260FD503006ACA62 /* ItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA46DC63260FD503006ACA62 /* ItemTableViewCell.swift */; };
+		CA46DC64260FD503006ACA62 /* CheckMealTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA46DC63260FD503006ACA62 /* CheckMealTableViewCell.swift */; };
 		CA5345C325F7E45F007B4DA6 /* UserSearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5345C225F7E45F007B4DA6 /* UserSearchTableViewCell.swift */; };
 		CA63282725ED71E9003D7B9C /* ProfileSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA63282625ED71E9003D7B9C /* ProfileSettingsViewController.swift */; };
 		CA6C774125E83374008E401E /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6C774025E83374008E401E /* DatabaseManager.swift */; };
@@ -99,7 +99,7 @@
 		CA46DC4C260FCB41006ACA62 /* CheckMealViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMealViewController.swift; sourceTree = "<group>"; };
 		CA46DC51260FCB55006ACA62 /* ProductRecordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductRecordsViewController.swift; sourceTree = "<group>"; };
 		CA46DC5B260FD4E9006ACA62 /* MealTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealTableViewCell.swift; sourceTree = "<group>"; };
-		CA46DC63260FD503006ACA62 /* ItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTableViewCell.swift; sourceTree = "<group>"; };
+		CA46DC63260FD503006ACA62 /* CheckMealTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMealTableViewCell.swift; sourceTree = "<group>"; };
 		CA5345C225F7E45F007B4DA6 /* UserSearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSearchTableViewCell.swift; sourceTree = "<group>"; };
 		CA63282625ED71E9003D7B9C /* ProfileSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsViewController.swift; sourceTree = "<group>"; };
 		CA6C774025E83374008E401E /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
@@ -288,7 +288,7 @@
 			isa = PBXGroup;
 			children = (
 				CA46DC5B260FD4E9006ACA62 /* MealTableViewCell.swift */,
-				CA46DC63260FD503006ACA62 /* ItemTableViewCell.swift */,
+				CA46DC63260FD503006ACA62 /* CheckMealTableViewCell.swift */,
 			);
 			path = ProductMealItem;
 			sourceTree = "<group>";
@@ -679,7 +679,7 @@
 				CACECE28260137A100433104 /* AddMealTableViewCell.swift in Sources */,
 				CA63282725ED71E9003D7B9C /* ProfileSettingsViewController.swift in Sources */,
 				CA28FB1C25E699520020FC32 /* DietitianRegisterViewController.swift in Sources */,
-				CA46DC64260FD503006ACA62 /* ItemTableViewCell.swift in Sources */,
+				CA46DC64260FD503006ACA62 /* CheckMealTableViewCell.swift in Sources */,
 				CACECE0B260124BF00433104 /* AddDayViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

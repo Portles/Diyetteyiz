@@ -183,8 +183,15 @@ class ProductsViewController: UIViewController {
         view.addSubview(seeRecordsButton)
         
         todaysButton.addTarget(self, action: #selector(didTapTodaysButton), for: .touchUpInside)
+        todaysReportButton.addTarget(self, action: #selector(didTapReportTodayButton), for: .touchUpInside)
         
         navigationItem.title = "Satın Alımlar"
+    }
+    
+    @objc private func didTapReportTodayButton() {
+        let day = Int(ProductsViewController.productData.daysCount!) - Int((ongProduct.lastRecord?.leftDays!)!)
+        let vc = CheckMealViewController(with: ProductsViewController.productData, whichDay: day)
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc private func didTapTodaysButton() {

@@ -38,7 +38,7 @@ class TodaysMealViewController: UIViewController {
         mealTableView.delegate = self
         mealTableView.dataSource = self
         
-        navigationItem.title = String(ProductsViewController.productData.daysCount ?? 0) + ". Gün"
+        navigationItem.title = String((ProductsViewController.productData.daysCount ?? 0) - 1) + ". Gün"
     }
     
     override func viewDidLayoutSubviews() {

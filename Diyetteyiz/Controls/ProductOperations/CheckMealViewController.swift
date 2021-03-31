@@ -9,8 +9,11 @@ import UIKit
 
 class CheckMealViewController: UIViewController {
 
+    public static var todayIndex: Int = 0
     private var whichDay: Int
-    private var AllItems = [Item]()
+    public static var itemIndex: Int = 0
+    public static var MealIndex: Int = 0
+    public static var itemRecords = [ItemRecord]()
 //    private var product = Product()
     
     private let mealTableView: UITableView = {
@@ -19,8 +22,20 @@ class CheckMealViewController: UIViewController {
         return tableView
     }()
     
+    private let complateButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Tamamla", for: .normal)
+        button.backgroundColor = .link
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.layer.masksToBounds = true
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        return button
+    }()
+    
     init(with product: Product, whichDay: Int) {
         self.whichDay = whichDay
+        CheckMealViewController.todayIndex = whichDay
         super.init(nibName: nil ,bundle: nil)
     }
     
@@ -34,16 +49,32 @@ class CheckMealViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         view.addSubview(mealTableView)
+        view.addSubview(complateButton)
         
         mealTableView.delegate = self
         mealTableView.dataSource = self
         
+        complateButton.addTarget(self, action: #selector(didTapComplateButton), for: .touchUpInside)
+        
         navigationItem.title = String((ProductsViewController.productData.daysCount ?? 0) - 1) + ". Gün"
+    }
+    
+    @objc private func didTapComplateButton() {
+        
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        mealTableView.frame = view.bounds
+        mealTableView.frame = CGRect(x: 0, y: 0, width: view.width, height: view.height - 200)
+        complateButton.frame = CGRect(x: 30, y: mealTableView.bottom + 10, width: view.width - 60, height: 52)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        CheckMealViewController.itemIndex = 0
+        CheckMealViewController.MealIndex = 0
+        CheckMealViewController.itemRecords.removeAll()
     }
 
 }

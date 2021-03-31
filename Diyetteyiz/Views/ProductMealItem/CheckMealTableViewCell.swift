@@ -5,19 +5,12 @@
 //  Created by Nizamet Özkan on 28.03.2021.
 //
 
-struct mealRecord: Codable {
-    let isAllMaked: Bool?
-    let meal: MealRecord?
-}
-
-struct MealRecord: Codable {
-    let items: [ItemRecord]?
-}
-
 struct ItemRecord: Codable {
+    let dayIndex: Int?
+    let mealIndex: Int?
     let ItemIndex: Int?
     let isMaked: Bool?
-    let makedMeasure: String?
+    let makedMeasure: Int?
 }
 
 import UIKit
@@ -65,7 +58,6 @@ class CheckMealTableViewCell: UITableViewCell {
         field.leftView = UIView(frame: CGRect(x: 0,y: 0, width: 5,height:0))
         field.leftViewMode = .always
         field.backgroundColor = .secondarySystemBackground
-        field.isHidden = false
         field.isEnabled = true
         return field
     }()
@@ -79,19 +71,7 @@ class CheckMealTableViewCell: UITableViewCell {
         contentView.addSubview(radioButton)
         contentView.addSubview(textField)
         
-        radioButton.addTarget(self, action: #selector(didTapRadioButton), for: .touchUpInside)
-    }
-    
-    @objc private func didTapRadioButton() {
-        if radioButton.isSelected {
-            radioButton.isSelected = false
-            textField.isEnabled = true
-            textField.isHidden = false
-        } else {
-            radioButton.isSelected = true
-            textField.isEnabled = false
-            textField.isHidden = true
-        }
+        textField.delegate = self
     }
     
     override func layoutSubviews() {
@@ -99,8 +79,8 @@ class CheckMealTableViewCell: UITableViewCell {
         itemNameLabel.frame = CGRect(x: 30, y: 10, width: contentView.width/3.2, height: contentView.height - 10)
         itemMeasureLabel.frame = CGRect(x: itemNameLabel.right, y: 10, width: contentView.width/5, height: contentView.height - 10)
         itemCalLabel.frame = CGRect(x: itemMeasureLabel.right, y: 10, width: contentView.width/12, height: contentView.height - 10)
-        radioButton.frame = CGRect(x: itemCalLabel.right + 20, y: 15, width: contentView.width/10, height: 52)
-        textField.frame = CGRect(x: radioButton.right + 10, y: 15, width: contentView.width/7, height: 52)
+        textField.frame = CGRect(x: itemCalLabel.right + 20, y: 15, width: contentView.width/10, height: 52)
+        radioButton.frame = CGRect(x: textField.right + 10, y: 15, width: contentView.width/7, height: 52)
     }
     
     required init?(coder: NSCoder) {
@@ -111,5 +91,30 @@ class CheckMealTableViewCell: UITableViewCell {
         itemNameLabel.text = item?.name
         itemMeasureLabel.text = String((item?.neededMesure!)!) + " " + (item?.itemType!)!
         itemCalLabel.text = String((item?.itemCalorie)!)
+    }
+}
+
+extension CheckMealTableViewCell: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        let data = Int(textField.text ?? "0")
+        if ((textField.text?.isEmpty) != nil) {
+//            Day al meal al
+            CheckMealViewController.itemRecords.append(ItemRecord(dayIndex: CheckMealViewController.todayIndex, mealIndex: CheckMealViewController.MealIndex, ItemIndex: CheckMealViewController.itemIndex, isMaked: true, makedMeasure: data))
+        } else {
+            CheckMealViewController.itemRecords.append(ItemRecord(dayIndex: CheckMealViewController.todayIndex, mealIndex: CheckMealViewController.MealIndex, ItemIndex: CheckMealViewController.itemIndex, isMaked: false, makedMeasure: data))
+        }
+        
+        if CheckMealViewController.itemIndex == ProductsViewController.productData.Days![CheckMealViewController.todayIndex].Meals![CheckMealViewController.MealIndex].items!.count - 1 {
+            CheckMealViewController.MealIndex += 1
+            CheckMealViewController.itemIndex = 0
+        } else {
+            CheckMealViewController.itemIndex += 1
+        }
+        
+        radioButton.isSelected = true
+        print("\(textField.text ?? "sa")")
+        print("\(CheckMealViewController.itemRecords)")
+        return true
     }
 }

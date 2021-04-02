@@ -182,8 +182,8 @@ class ProductsViewController: UIViewController {
         view.addSubview(progressPercentLabel)
         view.addSubview(seeRecordsButton)
         
-        todaysButton.addTarget(self, action: #selector(didTapTodaysButton), for: .touchUpInside)
-        todaysReportButton.addTarget(self, action: #selector(didTapReportTodayButton), for: .touchUpInside)
+//        todaysButton.addTarget(self, action: #selector(didTapTodaysButton), for: .touchUpInside)
+//        todaysReportButton.addTarget(self, action: #selector(didTapReportTodayButton), for: .touchUpInside)
         
         navigationItem.title = "Satın Alımlar"
     }
@@ -306,6 +306,18 @@ class ProductsViewController: UIViewController {
     private func fillInfoSecondPhase() {
         priceLabel.text = "Fiyat: " + ProductsViewController.productData.price! + "₺"
         getPic()
+        isProgramFinished()
+    }
+    
+    private func isProgramFinished() {
+        if ProductsViewController.ongProduct.lastRecord?.leftDays == 0 {
+            todaysButton.isEnabled = false
+            todaysReportButton.isEnabled = false
+            progressLabel.text = "Tamamlandı."
+        } else {
+            todaysButton.addTarget(self, action: #selector(didTapTodaysButton), for: .touchUpInside)
+            todaysReportButton.addTarget(self, action: #selector(didTapReportTodayButton), for: .touchUpInside)
+        }
     }
     
     private func fillInfo() {

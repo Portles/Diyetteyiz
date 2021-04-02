@@ -275,6 +275,7 @@ class ProfileSettingsViewController: UIViewController {
         UserDefaults.standard.setValue(nil, forKey: "email")
         UserDefaults.standard.setValue(nil, forKey: "name")
         UserDefaults.standard.setValue(nil, forKey: "permission")
+        UserDefaults.standard.setValue(nil, forKey: "programId")
         
         do {
             try FirebaseAuth.Auth.auth().signOut()

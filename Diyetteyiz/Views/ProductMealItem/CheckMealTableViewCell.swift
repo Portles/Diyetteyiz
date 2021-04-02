@@ -5,12 +5,15 @@
 //  Created by Nizamet Özkan on 28.03.2021.
 //
 
+struct ItemRecords: Codable {
+    var items: [ItemRecord]?
+}
+
 struct ItemRecord: Codable {
-    let dayIndex: Int?
-    let mealIndex: Int?
-    let ItemIndex: Int?
-    let isMaked: Bool?
-    let makedMeasure: Int?
+    var mealIndex: Int?
+    var ItemIndex: Int?
+    var isMaked: Bool?
+    var makedMeasure: Int?
 }
 
 import UIKit
@@ -100,9 +103,13 @@ extension CheckMealTableViewCell: UITextFieldDelegate {
         let data = Int(textField.text ?? "0")
         if ((textField.text?.isEmpty) != nil) {
 //            Day al meal al
-            CheckMealViewController.itemRecords.append(ItemRecord(dayIndex: CheckMealViewController.todayIndex, mealIndex: CheckMealViewController.MealIndex, ItemIndex: CheckMealViewController.itemIndex, isMaked: true, makedMeasure: data))
+            let data = ItemRecord(mealIndex: CheckMealViewController.MealIndex, ItemIndex: CheckMealViewController.itemIndex, isMaked: true, makedMeasure: data)
+            
+            CheckMealViewController.items.append(data)
         } else {
-            CheckMealViewController.itemRecords.append(ItemRecord(dayIndex: CheckMealViewController.todayIndex, mealIndex: CheckMealViewController.MealIndex, ItemIndex: CheckMealViewController.itemIndex, isMaked: false, makedMeasure: data))
+            let data = ItemRecord(mealIndex: CheckMealViewController.MealIndex, ItemIndex: CheckMealViewController.itemIndex, isMaked: false, makedMeasure: data)
+            
+            CheckMealViewController.items.append(data)
         }
         
         if CheckMealViewController.itemIndex == ProductsViewController.productData.Days![CheckMealViewController.todayIndex].Meals![CheckMealViewController.MealIndex].items!.count - 1 {
@@ -113,8 +120,9 @@ extension CheckMealTableViewCell: UITextFieldDelegate {
         }
         
         radioButton.isSelected = true
+        textField.isEnabled = false
         print("\(textField.text ?? "sa")")
-        print("\(CheckMealViewController.itemRecords)")
+        print("\(CheckMealViewController.items)")
         return true
     }
 }

@@ -13,7 +13,8 @@ class CheckMealViewController: UIViewController {
     private var whichDay: Int
     public static var itemIndex: Int = 0
     public static var MealIndex: Int = 0
-    public static var itemRecords = [ItemRecord]()
+    public static var itemRecords = ItemRecords()
+    public static var items = [ItemRecord]()
 //    private var product = Product()
     
     private let mealTableView: UITableView = {
@@ -61,6 +62,24 @@ class CheckMealViewController: UIViewController {
     
     @objc private func didTapComplateButton() {
         
+        let data = CheckMealViewController.items
+        
+        CheckMealViewController.itemRecords.items = data
+        
+        DatabaseManager.shared.InsertNewDietRecord(with: CheckMealViewController.itemRecords, whichDay: whichDay, leftDays: (ProductsViewController.ongProduct.lastRecord?.leftDays)!, nextDay: (ProductsViewController.ongProduct.lastRecord?.nextDay)!, completion: { succes in
+            if succes {
+                self.presentComplated()
+                print("Kayıt tamam")
+                self.navigationController?.popViewController(animated: true)
+            }
+        })
+    }
+    
+    private func presentComplated() {
+        let alert = UIAlertController(title: "Kayıt Durumu", message: "Günlük kaydınız tamamlandı. 👍", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Tamam", style: .destructive, handler: nil))
+        
+        present(alert, animated: true, completion: nil)
     }
     
     override func viewDidLayoutSubviews() {
@@ -74,7 +93,7 @@ class CheckMealViewController: UIViewController {
         
         CheckMealViewController.itemIndex = 0
         CheckMealViewController.MealIndex = 0
-        CheckMealViewController.itemRecords.removeAll()
+        CheckMealViewController.itemRecords.items?.removeAll()
     }
 
 }

@@ -37,7 +37,7 @@ class ProductsViewController: UIViewController {
 
     public static var productData = Product()
     public var productCompletion: ((Product) -> (Void))?
-    private var ongProduct = OngoingProduct()
+    public static var ongProduct = OngoingProduct()
     public var ongoingProductCompletion: ((OngoingProduct) -> (Void))?
     
     private var productdata = [[String: Any]]()
@@ -189,13 +189,13 @@ class ProductsViewController: UIViewController {
     }
     
     @objc private func didTapReportTodayButton() {
-        let day = Int(ProductsViewController.productData.daysCount!) - Int((ongProduct.lastRecord?.leftDays!)!)
+        let day = Int(ProductsViewController.productData.daysCount!) - Int((ProductsViewController.ongProduct.lastRecord?.leftDays!)!)
         let vc = CheckMealViewController(with: ProductsViewController.productData, whichDay: day)
         navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc private func didTapTodaysButton() {
-        let day = Int(ProductsViewController.productData.daysCount!) - Int((ongProduct.lastRecord?.leftDays!)!)
+        let day = Int(ProductsViewController.productData.daysCount!) - Int((ProductsViewController.ongProduct.lastRecord?.leftDays!)!)
         let vc = TodaysMealViewController(with: ProductsViewController.productData, whichDay: day)
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -224,7 +224,7 @@ class ProductsViewController: UIViewController {
                                 do {
                                     let customer = try decoder.decode(OngoingProduct.self, from: data)
                                     print(customer)
-                                    self.ongProduct = customer
+                                    ProductsViewController.ongProduct = customer
                                     self.fillInfo()
                                     
                                     DatabaseManager.shared.getDietitianProductData(with: customer.fromWho!, completion: { [weak self]result in
@@ -309,15 +309,15 @@ class ProductsViewController: UIViewController {
     }
     
     private func fillInfo() {
-        headerLabel.text = ongProduct.whichProduct
-        nextReportTimeLeftLabel.text = "Kalan gün: " + String((ongProduct.lastRecord?.leftDays)!)
-        progressPercentLabel.text = "İlerleme: %" + String((ongProduct.lastRecord?.succesRate)!)
-        if ongProduct.isHaveOngoingProduct ?? false {
+        headerLabel.text = ProductsViewController.ongProduct.whichProduct
+        nextReportTimeLeftLabel.text = "Kalan gün: " + String((ProductsViewController.ongProduct.lastRecord?.leftDays)!)
+        progressPercentLabel.text = "İlerleme: %" + String((ProductsViewController.ongProduct.lastRecord?.succesRate)!)
+        if ProductsViewController.ongProduct.isHaveOngoingProduct ?? false {
             progressLabel.text = "Program durumu: Devam"
         } else {
             progressLabel.text = "Program durumu: İptal"
         }
-        dietitianNameLabel.text = DatabaseManager.notSafeEmail(emailAdress: ongProduct.fromWho!)
+        dietitianNameLabel.text = DatabaseManager.notSafeEmail(emailAdress: ProductsViewController.ongProduct.fromWho!)
     }
     
     private func hide() {

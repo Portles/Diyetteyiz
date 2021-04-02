@@ -553,6 +553,8 @@ extension DatabaseManager {
         let startDate = Calendar.current.date(bySetting: .minute, value: 00, of: modifiedDate)!
         let startDateString = DatabaseManager.dateFormatter.string(from: startDate)
         
+        UserDefaults.standard.setValue(programId, forKey: "programId")
+        
         database.child("\(buyyerId)/ongoingProduct").setValue([
             "isHaveOngoingProduct": true ,
             "whichProduct": program.header!,
@@ -617,7 +619,9 @@ extension DatabaseManager {
                 if var userNotification = snapshot.value as? [[String: Any]] {
                     let newElement = [
                         "\(programId)": [
-                            "createDate": dateString
+                            "createDate": dateString,
+                            "Records": [
+                            ]
                         ]
                     ] as [String : Any]
                     guard let strongSelf = self else {
@@ -632,9 +636,11 @@ extension DatabaseManager {
                     completion(true)
                 })
             } else {
-                let newCollection: [[String: Any]] = [
-                    [
-                        "createDate": dateString
+                let newCollection: [String: Any] = [
+                    "\(programId)": [
+                        "createDate": dateString,
+                        "Records": [
+                        ]
                     ]
                 ]
                 strongSelf.database.child("ongoingPrograms").setValue(newCollection, withCompletionBlock: { error, _ in
@@ -685,6 +691,122 @@ extension DatabaseManager {
             })
         })
     }
+    
+    // MARK: - ADD RECORD
+    
+    public func InsertNewDietRecord(with product: ItemRecords, whichDay: Int, leftDays: Int, nextDay: Int, completion: @escaping (Bool) -> Void){
+        let succesRate = whichDay/(leftDays+nextDay-1) * 100
+        let safeEmail = DatabaseManager.safeEmail(emailAdress: UserDefaults.standard.string(forKey: "email")!)
+        let programId = UserDefaults.standard.string(forKey: "programId")!
+        
+        let jsonEncoder = JSONEncoder()
+        jsonEncoder.outputFormatting = .withoutEscapingSlashes
+        let jsonData = try! jsonEncoder.encode(product)
+        let str = String(data: jsonData, encoding: String.Encoding.utf8)
+        
+        let nowDate = Date()
+        let dateString = DatabaseManager.dateFormatter.string(from: nowDate)
+        
+        func convertToDictionary(text: String) -> [String: Any]? {
+            if let data = text.data(using: .utf8) {
+                do {
+                    return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+            return nil
+        }
+        
+        let json = convertToDictionary(text: str!)
+        
+        let leftDaysFix = leftDays - 1
+        let nextDayFix = nextDay + 1
+        
+        database.child("\(safeEmail)/ongoingProduct/lastRecord").setValue([
+            "leftDays": leftDaysFix,
+            "nextDay": nextDayFix,
+            "succesRate": succesRate
+        ], withCompletionBlock: { [weak self]error, _ in
+            
+            guard let strongSelf = self else {
+                return
+            }
+            
+            guard error == nil else {
+                print("Database yazım hatası.")
+                completion(false)
+                return
+            }
+            
+            strongSelf.database.child("ongoingPrograms/\(programId)/Records").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                if var userNotification = snapshot.value as? [[String: Any]] {
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    userNotification.append(json!)
+                    strongSelf.database.child("ongoingPrograms/\(programId)/Records").setValue(userNotification, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                } else {
+                    let newCollection: [[String: Any]] = [
+                        json!
+                    ]
+                    strongSelf.database.child("ongoingPrograms/\(programId)/Records").setValue(newCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                }
+            })
+            
+            strongSelf.database.child("\(safeEmail)/notifications").observeSingleEvent(of: .value, with: { [weak self]snapshot in
+                if var userNotification = snapshot.value as? [[String: Any]] {
+                    let newElement = [
+                        "header": "İlerleme \(whichDay). gün",
+                        "info": "İlerlemen kaydedildi. Programına uymayı unutma. 😁👍",
+                        "isRead": false,
+                        "time": dateString
+                    ] as [String : Any]
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    userNotification.append(newElement)
+                    strongSelf.database.child("\(safeEmail)/notifications").setValue(userNotification, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                } else {
+                    let newCollection: [[String: Any]] = [
+                        [
+                            "header": "İlerleme \(whichDay). gün",
+                            "info": "İlerlemen kaydedildi. Programına uymayı unutma. 😁👍",
+                            "isRead": false,
+                            "time": dateString
+                        ]
+                    ]
+                    
+                    strongSelf.database.child("\(safeEmail)/notifications").setValue(newCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        completion(true)
+                    })
+                }
+            })
+            
+        }
+    )}
     
     public func getDietitianMenu(with dietitianEmail: String ,completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
         database.child("\(dietitianEmail)/products").observeSingleEvent(of: .value, with: { snapshot in

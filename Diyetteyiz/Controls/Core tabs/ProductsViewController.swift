@@ -182,10 +182,15 @@ class ProductsViewController: UIViewController {
         view.addSubview(progressPercentLabel)
         view.addSubview(seeRecordsButton)
         
-//        todaysButton.addTarget(self, action: #selector(didTapTodaysButton), for: .touchUpInside)
-//        todaysReportButton.addTarget(self, action: #selector(didTapReportTodayButton), for: .touchUpInside)
+        subscriptionButton.addTarget(self, action: #selector(didTapSubsicriptionsButton), for: .touchUpInside)
+        seeRecordsButton.addTarget(self, action: #selector(didTapRecordsButton), for: .touchUpInside)
         
         navigationItem.title = "Satın Alımlar"
+    }
+    
+    @objc private func didTapSubsicriptionsButton() {
+        let vc = ProductSettingsViewController()
+        present(vc, animated: true, completion: nil)
     }
     
     @objc private func didTapReportTodayButton() {
@@ -197,6 +202,11 @@ class ProductsViewController: UIViewController {
     @objc private func didTapTodaysButton() {
         let day = Int(ProductsViewController.productData.daysCount!) - Int((ProductsViewController.ongProduct.lastRecord?.leftDays!)!)
         let vc = TodaysMealViewController(with: ProductsViewController.productData, whichDay: day)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @objc private func didTapRecordsButton() {
+        let vc = ProductRecordsViewController()
         navigationController?.pushViewController(vc, animated: true)
     }
     

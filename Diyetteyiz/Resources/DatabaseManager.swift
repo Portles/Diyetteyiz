@@ -369,6 +369,18 @@ extension DatabaseManager {
         })
     }
     
+    // MARK: - RECORDLARI ALMA
+    public func getProductRecords(completion: @escaping (Result<NSDictionary, Error>) -> Void) {
+        let programId = UserDefaults.standard.string(forKey: "programId")!
+        database.child("ongoingPrograms/\(programId)").observeSingleEvent(of: .value, with: { snapshot in
+            if let userProductData = snapshot.value as? NSDictionary {
+                completion(.success(userProductData))
+            } else {
+                completion(.failure(DatabaseError.dataCekmeHatasi))
+            }
+        })
+    }
+    
     // MARK: - Diyet Programı Ekleme
     
     public func InsertDietitianProgram(with product: DietModel, miniProduct: MenuViewModelDiet, completion: @escaping (Bool) -> Void){
@@ -695,7 +707,7 @@ extension DatabaseManager {
     // MARK: - ADD RECORD
     
     public func InsertNewDietRecord(with product: ItemRecords, whichDay: Int, leftDays: Int, nextDay: Int, completion: @escaping (Bool) -> Void){
-        let succesRate = whichDay/(leftDays+nextDay-1) * 100
+        let succesRate = 1/whichDay+leftDays
         let safeEmail = DatabaseManager.safeEmail(emailAdress: UserDefaults.standard.string(forKey: "email")!)
         let programId = UserDefaults.standard.string(forKey: "programId")!
         

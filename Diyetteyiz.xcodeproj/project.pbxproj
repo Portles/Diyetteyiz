@@ -29,7 +29,9 @@
 		CA6C774625E85EC4008E401E /* Register1-1ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6C774525E85EC4008E401E /* Register1-1ViewController.swift */; };
 		CA6C774B25E85ECE008E401E /* Register1-2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6C774A25E85ECE008E401E /* Register1-2ViewController.swift */; };
 		CA6C775025E85ED8008E401E /* Register1-3ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6C774F25E85ED8008E401E /* Register1-3ViewController.swift */; };
+		CA965F5226264828009931D8 /* ProductTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA965F5126264828009931D8 /* ProductTableViewCell.swift */; };
 		CAA7E19D25F40C4500281DC4 /* NotificationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA7E19C25F40C4500281DC4 /* NotificationTableViewCell.swift */; };
+		CAB01EB726238C0700ADD639 /* ProductSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB01EB626238C0700ADD639 /* ProductSettingsViewController.swift */; };
 		CAB2D6FD25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB2D6FC25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift */; };
 		CAB51DFE25F2DB76003DE670 /* NotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB51DFD25F2DB76003DE670 /* NotificationsViewController.swift */; };
 		CAB8922025EAD5F1005F08E1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CAB8921F25EAD5F1005F08E1 /* GoogleService-Info.plist */; };
@@ -106,7 +108,9 @@
 		CA6C774525E85EC4008E401E /* Register1-1ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Register1-1ViewController.swift"; sourceTree = "<group>"; };
 		CA6C774A25E85ECE008E401E /* Register1-2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Register1-2ViewController.swift"; sourceTree = "<group>"; };
 		CA6C774F25E85ED8008E401E /* Register1-3ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Register1-3ViewController.swift"; sourceTree = "<group>"; };
+		CA965F5126264828009931D8 /* ProductTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTableViewCell.swift; sourceTree = "<group>"; };
 		CAA7E19C25F40C4500281DC4 /* NotificationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTableViewCell.swift; sourceTree = "<group>"; };
+		CAB01EB626238C0700ADD639 /* ProductSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductSettingsViewController.swift; sourceTree = "<group>"; };
 		CAB2D6FC25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeDietitianTableViewCell.swift; sourceTree = "<group>"; };
 		CAB51DFD25F2DB76003DE670 /* NotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsViewController.swift; sourceTree = "<group>"; };
 		CAB8921F25EAD5F1005F08E1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -224,6 +228,7 @@
 		CA28FAFA25E651460020FC32 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				CA965F5026264806009931D8 /* ProductRecordCells */,
 				CA46DC5A260FD4CA006ACA62 /* ProductMealItem */,
 				CACECE1E26012D0F00433104 /* AddDiet */,
 				CA28FAFC25E651600020FC32 /* Storyboards */,
@@ -246,6 +251,7 @@
 				CA28FAFD25E6519A0020FC32 /* Login */,
 				CA63282B25ED72BC003D7B9C /* Core tabs */,
 				CA63282625ED71E9003D7B9C /* ProfileSettingsViewController.swift */,
+				CAB01EB626238C0700ADD639 /* ProductSettingsViewController.swift */,
 				CAB51E0725F2DB9F003DE670 /* Notifications */,
 				CAFCF79F25FE7B9C0066C2F9 /* SearchProfileViewController.swift */,
 				CAFCF7B625FFF1330066C2F9 /* MenuViewController.swift */,
@@ -313,6 +319,14 @@
 				CA6C774F25E85ED8008E401E /* Register1-3ViewController.swift */,
 			);
 			path = RegisterControllers;
+			sourceTree = "<group>";
+		};
+		CA965F5026264806009931D8 /* ProductRecordCells */ = {
+			isa = PBXGroup;
+			children = (
+				CA965F5126264828009931D8 /* ProductTableViewCell.swift */,
+			);
+			path = ProductRecordCells;
 			sourceTree = "<group>";
 		};
 		CAB51E0725F2DB9F003DE670 /* Notifications */ = {
@@ -665,8 +679,10 @@
 				CA46DC5C260FD4E9006ACA62 /* MealTableViewCell.swift in Sources */,
 				CA28FB2625E6ABE40020FC32 /* Extensions.swift in Sources */,
 				CA28FB0525E655820020FC32 /* SearchViewController.swift in Sources */,
+				CAB01EB726238C0700ADD639 /* ProductSettingsViewController.swift in Sources */,
 				CA21F04625FA3F06004EB39D /* StorageManager.swift in Sources */,
 				CA5345C325F7E45F007B4DA6 /* UserSearchTableViewCell.swift in Sources */,
+				CA965F5226264828009931D8 /* ProductTableViewCell.swift in Sources */,
 				CACECE10260124F700433104 /* AddMealViewController.swift in Sources */,
 				CA6C774125E83374008E401E /* DatabaseManager.swift in Sources */,
 				CAB8D11325E64A1C00601803 /* SceneDelegate.swift in Sources */,

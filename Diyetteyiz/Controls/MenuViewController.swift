@@ -249,7 +249,7 @@ class MenuViewController: UIViewController {
         headerLabel.text = self.menuData[0].header
         infoLabel.text = self.menuData[0].info
         priceLabel.text = "Fiyat: " + self.menuData[0].price!
-        daysLabel.text = "Toplam: " + String(self.menuData[0].daysCount!) + "gün"
+        daysLabel.text = "Toplam: " + String(self.menuData[0].daysCount!) + " gün"
         mealCountLabel.text =  "Öğün Sayısı: " + String(self.menuData[0].mealCount!)
         productCountLabel.text = "Çeşit Sayısı: " + String(self.menuData[0].itemCount!)
     }

@@ -11,7 +11,7 @@ import UIKit
 struct RecordTable: Codable {
     var records: [Record]?
     var createDate: String?
-
+    
     enum CodingKeys: String, CodingKey {
         case records = "Records"
         case createDate
@@ -28,14 +28,28 @@ struct item: Codable {
     var itemIndex: Int?
     var isMaked: Bool?
     var makedMeasure, mealIndex: Int?
-
+    
     enum CodingKeys: String, CodingKey {
         case itemIndex = "ItemIndex"
         case isMaked, makedMeasure, mealIndex
     }
 }
 
+struct recordProgress {
+    var records: [Progress]?
+}
+
+struct Progress {
+    var progress: Bool
+}
+
 class ProductRecordsViewController: UIViewController {
+    
+    private var records = RecordTable()
+    
+    private var itemsBools = [Bool]()
+    
+    private var recordsProgress = [Progress]()
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -49,6 +63,12 @@ class ProductRecordsViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         
+        view.addSubview(tableView)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        tableView.frame = view.bounds
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -57,6 +77,8 @@ class ProductRecordsViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         getProducts()
+        
+        tableView.reloadData()
     }
     
     func getProducts() {
@@ -70,6 +92,29 @@ class ProductRecordsViewController: UIViewController {
                     do {
                         let customer = try decoder.decode(RecordTable.self, from: data)
                         print(customer)
+                        self.records = customer
+                        
+                        var records = [Progress]()
+                        
+                        for x in 0..<customer.records!.count {
+                            
+                            for y in 0..<customer.records![x].items!.count {
+                                let percent = customer.records![x].items![y].isMaked
+                                if percent ?? true {
+                                    if y == customer.records![x].items!.count {
+                                        records.append(Progress(progress: true))
+                                    }
+                                    continue
+                                } else {
+                                    records.append(Progress(progress: false))
+                                    continue
+                                }
+                            }
+                        }
+                        
+                        self.recordsProgress = records
+                        
+                        self.tableView.reloadData()
                     } catch {
                         print(error.localizedDescription)
                     }
@@ -90,12 +135,20 @@ class ProductRecordsViewController: UIViewController {
 
 extension ProductRecordsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return records.records?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
+        let day = indexPath.row + 1
+        
+        let progress = recordsProgress[indexPath.row].progress
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: ProductTableViewCell.identifier, for: indexPath) as! ProductTableViewCell
+        cell.configure(with: day, progress: progress)
+        return cell
     }
     
-    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 52
+    }
 }

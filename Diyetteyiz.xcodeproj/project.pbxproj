@@ -30,6 +30,8 @@
 		CA6C774B25E85ECE008E401E /* Register1-2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6C774A25E85ECE008E401E /* Register1-2ViewController.swift */; };
 		CA6C775025E85ED8008E401E /* Register1-3ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6C774F25E85ED8008E401E /* Register1-3ViewController.swift */; };
 		CA965F5226264828009931D8 /* ProductTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA965F5126264828009931D8 /* ProductTableViewCell.swift */; };
+		CA9BA44C262E02E700BEAF95 /* TodaysRecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9BA44B262E02E700BEAF95 /* TodaysRecordViewController.swift */; };
+		CA9BA455262E0AE400BEAF95 /* TodaysRecordTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9BA454262E0AE400BEAF95 /* TodaysRecordTableViewCell.swift */; };
 		CAA7E19D25F40C4500281DC4 /* NotificationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA7E19C25F40C4500281DC4 /* NotificationTableViewCell.swift */; };
 		CAB01EB726238C0700ADD639 /* ProductSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB01EB626238C0700ADD639 /* ProductSettingsViewController.swift */; };
 		CAB2D6FD25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB2D6FC25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift */; };
@@ -109,6 +111,8 @@
 		CA6C774A25E85ECE008E401E /* Register1-2ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Register1-2ViewController.swift"; sourceTree = "<group>"; };
 		CA6C774F25E85ED8008E401E /* Register1-3ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Register1-3ViewController.swift"; sourceTree = "<group>"; };
 		CA965F5126264828009931D8 /* ProductTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTableViewCell.swift; sourceTree = "<group>"; };
+		CA9BA44B262E02E700BEAF95 /* TodaysRecordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodaysRecordViewController.swift; sourceTree = "<group>"; };
+		CA9BA454262E0AE400BEAF95 /* TodaysRecordTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodaysRecordTableViewCell.swift; sourceTree = "<group>"; };
 		CAA7E19C25F40C4500281DC4 /* NotificationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTableViewCell.swift; sourceTree = "<group>"; };
 		CAB01EB626238C0700ADD639 /* ProductSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductSettingsViewController.swift; sourceTree = "<group>"; };
 		CAB2D6FC25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeDietitianTableViewCell.swift; sourceTree = "<group>"; };
@@ -285,7 +289,7 @@
 			children = (
 				CA46DC47260FCB29006ACA62 /* TodaysMealViewController.swift */,
 				CA46DC4C260FCB41006ACA62 /* CheckMealViewController.swift */,
-				CA46DC51260FCB55006ACA62 /* ProductRecordsViewController.swift */,
+				CA9BA450262E02EC00BEAF95 /* Records */,
 			);
 			path = ProductOperations;
 			sourceTree = "<group>";
@@ -325,8 +329,18 @@
 			isa = PBXGroup;
 			children = (
 				CA965F5126264828009931D8 /* ProductTableViewCell.swift */,
+				CA9BA454262E0AE400BEAF95 /* TodaysRecordTableViewCell.swift */,
 			);
 			path = ProductRecordCells;
+			sourceTree = "<group>";
+		};
+		CA9BA450262E02EC00BEAF95 /* Records */ = {
+			isa = PBXGroup;
+			children = (
+				CA46DC51260FCB55006ACA62 /* ProductRecordsViewController.swift */,
+				CA9BA44B262E02E700BEAF95 /* TodaysRecordViewController.swift */,
+			);
+			path = Records;
 			sourceTree = "<group>";
 		};
 		CAB51E0725F2DB9F003DE670 /* Notifications */ = {
@@ -680,6 +694,7 @@
 				CA28FB2625E6ABE40020FC32 /* Extensions.swift in Sources */,
 				CA28FB0525E655820020FC32 /* SearchViewController.swift in Sources */,
 				CAB01EB726238C0700ADD639 /* ProductSettingsViewController.swift in Sources */,
+				CA9BA44C262E02E700BEAF95 /* TodaysRecordViewController.swift in Sources */,
 				CA21F04625FA3F06004EB39D /* StorageManager.swift in Sources */,
 				CA5345C325F7E45F007B4DA6 /* UserSearchTableViewCell.swift in Sources */,
 				CA965F5226264828009931D8 /* ProductTableViewCell.swift in Sources */,
@@ -688,6 +703,7 @@
 				CAB8D11325E64A1C00601803 /* SceneDelegate.swift in Sources */,
 				CACECE2026012D2D00433104 /* AddDayTableViewCell.swift in Sources */,
 				CA46DC48260FCB29006ACA62 /* TodaysMealViewController.swift in Sources */,
+				CA9BA455262E0AE400BEAF95 /* TodaysRecordTableViewCell.swift in Sources */,
 				CA28FB0A25E655920020FC32 /* ProductsViewController.swift in Sources */,
 				CACECE1A26012B5F00433104 /* DietMenuModel.swift in Sources */,
 				CAB51DFE25F2DB76003DE670 /* NotificationsViewController.swift in Sources */,

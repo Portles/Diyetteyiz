@@ -9,8 +9,10 @@ import UIKit
 
 class TodaysRecordViewController: UIViewController {
 
+    private var itemIndex: Int = 0
     private var whichDay: Int
     private var AllItems = [Item]()
+    private var records = RecordTable()
 //    private var product = Product()
     
     private let mealTableView: UITableView = {
@@ -19,8 +21,9 @@ class TodaysRecordViewController: UIViewController {
         return tableView
     }()
     
-    init(with record: Product) {
-        
+    init(with record: RecordTable, whichDay: Int) {
+        self.records = record
+        self.whichDay = whichDay - 1
         super.init(nibName: nil ,bundle: nil)
     }
     
@@ -59,12 +62,19 @@ extension TodaysRecordViewController: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: MealTableViewCell.identifier, for: indexPath) as! MealTableViewCell
-//        let mealTime = ProductsViewController.productData.Days![self.whichDay].Meals![indexPath.row].time
+        let cell = tableView.dequeueReusableCell(withIdentifier: TodaysRecordTableViewCell.identifier, for: indexPath) as! TodaysRecordTableViewCell
+        
         let data = ProductsViewController.productData.Days?[whichDay].Meals![indexPath.section]
-//        let mealIndex = ProductsViewController.productData.Days![self.whichDay].Meals?.count
+        
+        let maked = records.records![whichDay].items![itemIndex].makedMeasure!
+        
         let items = data?.items![indexPath.row]
-        cell.configure(with: items)
+        
+        itemIndex += 1
+        
+        let progress =  Int((Float(maked)/Float((items?.neededMesure)!))*100)
+        
+        cell.configure(with: items!, progress: progress)
         return cell
     }
     

@@ -101,7 +101,7 @@ class ProductRecordsViewController: UIViewController {
                             for y in 0..<customer.records![x].items!.count {
                                 let percent = customer.records![x].items![y].isMaked
                                 if percent ?? true {
-                                    if y == customer.records![x].items!.count {
+                                    if y+1 == customer.records![x].items!.count {
                                         records.append(Progress(progress: true))
                                     }
                                     continue
@@ -151,5 +151,9 @@ extension ProductRecordsViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 52
     }
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let vc = TodaysRecordViewController(with: records, whichDay: indexPath.row + 1)
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }

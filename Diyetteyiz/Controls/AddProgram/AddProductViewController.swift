@@ -110,6 +110,26 @@ class AddProductViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        addSubviews()
+        
+        myImageView.isUserInteractionEnabled = true
+        
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(didTapChangePicture))
+        myImageView.addGestureRecognizer(gesture)
+        
+        targetButtons()
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "power"), style: .done, target: self, action: #selector(didTapCloseButton))
+        
+        view.backgroundColor = .systemBackground
+    }
+    
+    private func targetButtons() {
+        manageDaysButton.addTarget(self, action: #selector(didTapManageDaysButton), for: .touchUpInside)
+        sendFormButton.addTarget(self, action: #selector(didTapSendFormButton), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.addSubview(headerField)
         view.addSubview(myImageView)
         view.addSubview(infoField)
@@ -117,18 +137,6 @@ class AddProductViewController: UIViewController {
         view.addSubview(priceField)
         view.addSubview(manageDaysButton)
         view.addSubview(sendFormButton)
-        
-        myImageView.isUserInteractionEnabled = true
-        
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(didTapChangePicture))
-        myImageView.addGestureRecognizer(gesture)
-        
-        manageDaysButton.addTarget(self, action: #selector(didTapManageDaysButton), for: .touchUpInside)
-        sendFormButton.addTarget(self, action: #selector(didTapSendFormButton), for: .touchUpInside)
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "power"), style: .done, target: self, action: #selector(didTapCloseButton))
-        
-        view.backgroundColor = .systemBackground
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -139,6 +147,10 @@ class AddProductViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        setFrames()
+    }
+    
+    private func setFrames() {
         headerField.frame = CGRect(x: 30, y: 150, width: view.width - 60, height: 52)
         myImageView.frame = CGRect(x: 30, y: headerField.bottom + 20, width: 100, height: 70)
         infoField.frame = CGRect(x: 30, y: myImageView.bottom + 20, width: view.width - 60, height: 200)

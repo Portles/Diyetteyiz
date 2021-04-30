@@ -32,11 +32,9 @@ class AddDayViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.addSubview(tableView)
-        view.addSubview(confirmButton)
+        addSubviews()
         
-        tableView.delegate = self
-        tableView.dataSource = self
+        setDelegates()
         
         confirmButton.addTarget(self, action: #selector(didTapConfirmButton), for: .touchUpInside)
         
@@ -44,6 +42,16 @@ class AddDayViewController: UIViewController {
         
         view.backgroundColor = .systemBackground
         
+    }
+    
+    private func setDelegates() {
+        tableView.delegate = self
+        tableView.dataSource = self
+    }
+    
+    private func addSubviews() {
+        view.addSubview(tableView)
+        view.addSubview(confirmButton)
     }
     
     @objc private func didTapPlusButton() {
@@ -59,8 +67,6 @@ class AddDayViewController: UIViewController {
         
         AddProductViewController.product.Days?.append(contentsOf: AddDayViewController.currentDays)
         
-        
-        
         navigationController?.popViewController(animated: true)
     }
     
@@ -71,6 +77,11 @@ class AddDayViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        setFrames()
+    }
+    
+    private func setFrames() {
         tableView.frame = CGRect(x: 0, y: 0, width: view.width, height: view.height-400)
         confirmButton.frame = CGRect(x: 30, y: tableView.bottom+10, width: view.width - 60, height: 52)
     }

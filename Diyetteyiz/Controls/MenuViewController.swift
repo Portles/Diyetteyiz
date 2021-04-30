@@ -112,7 +112,17 @@ class MenuViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.backgroundColor = .systemBackground
+        
+        addSubviews()
+        setButtonActions()
+    }
+    
+    private func setButtonActions() {
+        buyButton.addTarget(self, action: #selector(didTapBuyButton), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.addSubview(headerView)
         
         view.addSubview(backView)
@@ -124,11 +134,6 @@ class MenuViewController: UIViewController {
         view.addSubview(headerLabel)
         view.addSubview(infoLabel)
         view.addSubview(buyButton)
-        
-        buyButton.addTarget(self, action: #selector(didTapBuyButton), for: .touchUpInside)
-        
-        view.backgroundColor = .systemBackground
-        
     }
     
     @objc private func didTapBuyButton() {
@@ -257,6 +262,10 @@ class MenuViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        setFrames()
+    }
+    
+    private func setFrames() {
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width, height: view.height/4.0)
         backView.frame = CGRect(x: 30, y: headerView.bottom - 50, width: view.width - 60, height: view.height - 400)
         myImageView.frame = CGRect(x: backView.left + 10, y: backView.top + 10, width: (backView.width/2) - 20, height: 100)
@@ -268,19 +277,7 @@ class MenuViewController: UIViewController {
         infoLabel.frame = CGRect(x: backView.left + 10, y: headerLabel.bottom, width: 350, height: 300)
         buyButton.frame =  CGRect(x: 30, y: backView.bottom+20, width: view.width-60, height: 52)
         
-        configureHeaderView()
-    }
-    
-    private func configureHeaderView(){
-        guard headerView.subviews.count == 1 else{
-            return
-        }
-        guard let backgoundView = headerView.subviews.first else {
-            return
-        }
-        backgoundView.frame = headerView.bounds
-        
-        backgoundView.layer.zPosition = 1
+        UIView.configureHeaderView(with: headerView)
     }
     
     required init?(coder: NSCoder) {

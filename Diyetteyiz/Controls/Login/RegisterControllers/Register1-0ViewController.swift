@@ -63,20 +63,27 @@ class Register1_0ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.backgroundColor = .systemBackground
+        
+        addSubviews()
+        
+        setButtonActions()
+        
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
+    }
+    
+    private func setButtonActions() {
+        continueButton.addTarget(self, action: #selector(didTapContinueButton), for: .touchUpInside)
+        femaleButton.addTarget(self, action: #selector(didTapFemaleButton), for: .touchUpInside)
+        maleButton.addTarget(self, action: #selector(didTapMaleButton), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.addSubview(headerView)
         view.addSubview(headerLabel)
         view.addSubview(femaleButton)
         view.addSubview(maleButton)
         view.addSubview(continueButton)
-        
-        view.backgroundColor = .systemBackground
-        
-        continueButton.addTarget(self, action: #selector(didTapContinueButton), for: .touchUpInside)
-        femaleButton.addTarget(self, action: #selector(didTapFemaleButton), for: .touchUpInside)
-        maleButton.addTarget(self, action: #selector(didTapMaleButton), for: .touchUpInside)
-        
-        navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
     
     @objc private func didTapFemaleButton() {
@@ -102,25 +109,16 @@ class Register1_0ViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        setFrames()
+    }
+    
+    private func setFrames() {
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width, height: view.height/4.0)
         headerLabel.frame = CGRect(x: 30, y: (view.height/4.0)-100, width: 200, height: 100)
         femaleButton.frame = CGRect(x: 30, y: headerLabel.bottom + 10, width: view.width-60, height: 52)
         maleButton.frame = CGRect(x: 30, y: femaleButton.bottom + 100, width: view.width-60, height: 52)
         continueButton.frame = CGRect(x: 30, y: maleButton.bottom + 150, width: view.width-60, height: 52)
         
-        configureHeaderView()
+        UIView.configureHeaderView(with: headerView)
     }
-    
-    private func configureHeaderView(){
-        guard headerView.subviews.count == 1 else{
-            return
-        }
-        guard let backgoundView = headerView.subviews.first else {
-            return
-        }
-        backgoundView.frame = headerView.bounds
-        
-        backgoundView.layer.zPosition = 1
-    }
-
 }

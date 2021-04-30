@@ -73,21 +73,29 @@ class AddItemViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.addSubview(mealName)
-        view.addSubview(mealTime)
-        view.addSubview(tableView)
-        view.addSubview(confirmButton)
-        view.addSubview(cancelButton)
+        addSubviews()
 
-        tableView.delegate = self
-        tableView.dataSource = self
-        
+        setDelegates()
         
         confirmButton.addTarget(self, action: #selector(didTapConfirmButton), for: .touchUpInside)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .done, target: self, action: #selector(didTapPlusButton))
         
         view.backgroundColor = .systemBackground
+    }
+    
+    private func setDelegates() {
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+    }
+    
+    private func addSubviews() {
+        view.addSubview(mealName)
+        view.addSubview(mealTime)
+        view.addSubview(tableView)
+        view.addSubview(confirmButton)
+        view.addSubview(cancelButton)
     }
     
     @objc private func didTapConfirmButton() {
@@ -111,6 +119,11 @@ class AddItemViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        setFrames()
+    }
+    
+    private func setFrames() {
         mealName.frame = CGRect(x: 30, y: 100, width: view.width - 60, height: 52)
         mealTime.frame = CGRect(x: 30, y: mealName.bottom + 10, width: view.width - 60, height: 52)
         tableView.frame = CGRect(x: 0, y: mealTime.bottom + 10, width: view.width, height: view.height - 400)

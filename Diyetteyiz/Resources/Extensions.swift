@@ -27,5 +27,17 @@ extension UIView {
     public var right: CGFloat{
         return frame.size.width + frame.origin.x
     }
+    
+    public static func configureHeaderView(with headerView: UIView){
+        guard headerView.subviews.count == 1 else{
+            return
+        }
+        guard let backgoundView = headerView.subviews.first else {
+            return
+        }
+        backgoundView.frame = headerView.bounds
+        
+        backgoundView.layer.zPosition = 1
+    }
 }
 

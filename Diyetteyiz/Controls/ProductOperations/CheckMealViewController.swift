@@ -46,18 +46,26 @@ class CheckMealViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.backgroundColor = .systemBackground
+        navigationItem.title = String((ProductsViewController.productData.daysCount ?? 0) - 1) + ". Gün"
         
-        view.addSubview(mealTableView)
-        view.addSubview(complateButton)
-        
+        addSubviews()
+        setDelegates()
+        addButtonActions()
+    }
+    
+    private func addButtonActions() {
+        complateButton.addTarget(self, action: #selector(didTapComplateButton), for: .touchUpInside)
+    }
+    
+    private func setDelegates() {
         mealTableView.delegate = self
         mealTableView.dataSource = self
-        
-        complateButton.addTarget(self, action: #selector(didTapComplateButton), for: .touchUpInside)
-        
-        navigationItem.title = String((ProductsViewController.productData.daysCount ?? 0) - 1) + ". Gün"
+    }
+    
+    private func addSubviews() {
+        view.addSubview(mealTableView)
+        view.addSubview(complateButton)
     }
     
     @objc private func didTapComplateButton() {
@@ -84,6 +92,11 @@ class CheckMealViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        setFrames()
+    }
+    
+    private func setFrames() {
         mealTableView.frame = CGRect(x: 0, y: 0, width: view.width, height: view.height - 200)
         complateButton.frame = CGRect(x: 30, y: mealTableView.bottom + 10, width: view.width - 60, height: 52)
     }

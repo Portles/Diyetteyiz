@@ -58,32 +58,25 @@ class DietitianRegisterViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.backgroundColor = .systemBackground
+        
+        addSubviews()
+        
+        setButtonActions()
+        
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
+    }
+    
+    private func setButtonActions() {
+        mailButton.addTarget(self, action: #selector(didTapMailButton), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.addSubview(headerLabel)
         view.addSubview(headerInfoLabel)
         view.addSubview(mailButton)
         view.addSubview(warnLabel)
         view.addSubview(headerView)
-        
-        view.backgroundColor = .systemBackground
-        
-        mailButton.addTarget(self, action: #selector(didTapMailButton), for: .touchUpInside)
-        
-        navigationController?.interactivePopGestureRecognizer?.delegate = nil
-    }
-    
-    
-    
-    private func configureHeaderView(){
-        guard headerView.subviews.count == 1 else{
-            return
-        }
-        guard let backgoundView = headerView.subviews.first else {
-            return
-        }
-        backgoundView.frame = headerView.bounds
-        
-        backgoundView.layer.zPosition = 1
     }
     
     @objc private func didTapMailButton() {
@@ -113,6 +106,10 @@ class DietitianRegisterViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
+        setFrames()
+    }
+    
+    private func setFrames() {
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width, height: view.height/4.0)
         
         headerLabel.frame = CGRect(x: (view.width/2)-100, y: view.top + 200, width: 200, height: 20)
@@ -122,7 +119,7 @@ class DietitianRegisterViewController: UIViewController {
         mailButton.frame = CGRect(x: (view.width/2)-(buttonSize/2), y: headerInfoLabel.bottom+40, width: buttonSize, height: buttonSize)
         warnLabel.frame = CGRect(x: (view.width/2)-100, y: mailButton.bottom + 20, width: 200, height: 80)
         
-        configureHeaderView()
+        UIView.configureHeaderView(with: headerView)
     }
 
 }

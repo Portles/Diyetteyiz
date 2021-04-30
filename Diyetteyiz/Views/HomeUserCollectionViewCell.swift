@@ -25,7 +25,9 @@ class HomeUserCollectionViewCell: UICollectionViewCell {
     
     private let dietitianName: UILabel = {
         let label = UILabel()
-        
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.sizeToFit()
         return label
     }()
     
@@ -42,7 +44,7 @@ class HomeUserCollectionViewCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         myImageView.frame = CGRect(x: (contentView.width/2) - 50, y: 5, width: 100, height: 100)
-        dietitianName.frame = CGRect(x: myImageView.left+10, y: myImageView.bottom, width: 100, height: 52)
+        dietitianName.frame = CGRect(x: myImageView.left, y: myImageView.bottom, width: 100, height: 52)
     }
     
     override func prepareForReuse() {

@@ -126,7 +126,30 @@ class ProfileSettingsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
         
+        addSubviews()
+        setButtonActions()
+        imageViewInteractionConf()
+        setNavigationItem()
+    }
+    
+    private func setNavigationItem() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "power"), style: .done, target: self, action: #selector(didTapLogoutButton))
+    }
+    
+    private func imageViewInteractionConf() {
+        imageView.isUserInteractionEnabled = true
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(didTapChangeProfilePic))
+        imageView.addGestureRecognizer(gesture)
+    }
+    
+    private func setButtonActions() {
+        personalInfoSaveButton.addTarget(self, action: #selector(didTapUpdateInfoButton), for: .touchUpInside)
+        sendPassEmail.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.addSubview(imageView)
         view.addSubview(nameField)
         view.addSubview(surnameField)
@@ -136,18 +159,6 @@ class ProfileSettingsViewController: UIViewController {
         view.addSubview(warnLabel)
         
         view.addSubview(headerView)
-        
-        imageView.isUserInteractionEnabled = true
-        
-        personalInfoSaveButton.addTarget(self, action: #selector(didTapUpdateInfoButton), for: .touchUpInside)
-        sendPassEmail.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "power"), style: .done, target: self, action: #selector(didTapLogoutButton))
-        
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(didTapChangeProfilePic))
-        imageView.addGestureRecognizer(gesture)
-        
-        view.backgroundColor = .systemBackground
     }
     
     @objc func didTapChangeProfilePic() {
@@ -156,6 +167,11 @@ class ProfileSettingsViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        setFrames()
+    }
+    
+    private func setFrames() {
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width+100, height: view.height/4.0)
         
         let size = view.width/3
@@ -168,7 +184,7 @@ class ProfileSettingsViewController: UIViewController {
         sendPassEmail.frame = CGRect(x: 30, y: personalInfoSaveButton.bottom + 40, width: view.width-60, height: 52)
         warnLabel.frame = CGRect(x: (view.width/2)-200, y: sendPassEmail.bottom + 10, width: 400, height: 60)
         
-        configureHeaderView()
+        UIView.configureHeaderView(with: headerView)
     }
     
     @objc private func didTapUpdateInfoButton() {
@@ -256,18 +272,6 @@ class ProfileSettingsViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         warnLabel.isHidden = true
-    }
-    
-    private func configureHeaderView(){
-        guard headerView.subviews.count == 1 else{
-            return
-        }
-        guard let backgoundView = headerView.subviews.first else {
-            return
-        }
-        backgoundView.frame = headerView.bounds
-        
-        backgoundView.layer.zPosition = 1
     }
     
     @objc private func didTapLogoutButton() {

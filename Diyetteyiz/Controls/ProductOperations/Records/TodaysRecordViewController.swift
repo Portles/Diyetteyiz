@@ -33,15 +33,20 @@ class TodaysRecordViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.backgroundColor = .systemBackground
+        navigationItem.title = String((ProductsViewController.productData.daysCount ?? 0) - 1) + ". Gün Kaydı"
         
+        addSubviews()
+        setDelegates()
+    }
+    
+    private func addSubviews() {
         view.addSubview(mealTableView)
-        
+    }
+    
+    private func setDelegates() {
         mealTableView.delegate = self
         mealTableView.dataSource = self
-        
-        navigationItem.title = String((ProductsViewController.productData.daysCount ?? 0) - 1) + ". Gün Kaydı"
     }
     
     override func viewDidLayoutSubviews() {

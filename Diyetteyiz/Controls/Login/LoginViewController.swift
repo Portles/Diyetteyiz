@@ -115,7 +115,27 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
         
+        addSubviews()
+        
+        setButtonActions()
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+
+        tap.cancelsTouchesInView = false
+
+        view.addGestureRecognizer(tap)
+    }
+    
+    private func setButtonActions() {
+        logButton.addTarget(self, action: #selector(didTapLogButton), for: .touchUpInside)
+        forgotPassButton.addTarget(self, action: #selector(didTapforgotPassButton), for: .touchUpInside)
+        regButton.addTarget(self, action: #selector(didTapregButton), for: .touchUpInside)
+        dietitianRegButton.addTarget(self, action: #selector(didTapdietitianRegButton), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.addSubview(headerLabel)
         view.addSubview(headerInfoLabel)
         view.addSubview(emailField)
@@ -131,36 +151,10 @@ class LoginViewController: UIViewController {
         view.addSubview(dietitianRegButton)
         
         view.addSubview(headerView)
-        
-        logButton.addTarget(self, action: #selector(didTapLogButton), for: .touchUpInside)
-        forgotPassButton.addTarget(self, action: #selector(didTapforgotPassButton), for: .touchUpInside)
-        regButton.addTarget(self, action: #selector(didTapregButton), for: .touchUpInside)
-        dietitianRegButton.addTarget(self, action: #selector(didTapdietitianRegButton), for: .touchUpInside)
-        
-        
-        view.backgroundColor = .systemBackground
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
-
-        tap.cancelsTouchesInView = false
-
-        view.addGestureRecognizer(tap)
     }
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
-    }
-    
-    private func configureHeaderView(){
-        guard headerView.subviews.count == 1 else{
-            return
-        }
-        guard let backgoundView = headerView.subviews.first else {
-            return
-        }
-        backgoundView.frame = headerView.bounds
-        
-        backgoundView.layer.zPosition = 1
     }
     
     @objc private func didTapLogButton() {
@@ -242,6 +236,10 @@ class LoginViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        setFrames()
+    }
+    
+    private func setFrames() {
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width, height: view.height/4.0)
         
         headerLabel.frame = CGRect(x: 30, y: view.top+100, width: 200, height: 20)
@@ -260,7 +258,7 @@ class LoginViewController: UIViewController {
         regButton.frame = CGRect(x: 30, y: warnLabel.bottom+20, width: view.width-60, height: 52)
         dietitianRegButton.frame = CGRect(x: 30, y: regButton.bottom+10, width: 150, height: 20)
         
-        configureHeaderView()
+        UIView.configureHeaderView(with: headerView)
     }
     
     override func viewWillAppear(_ animated: Bool) {

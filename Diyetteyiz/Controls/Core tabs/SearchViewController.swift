@@ -76,23 +76,42 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
+        
+        addSubviews()
+        setDelegates()
+        setNavItem()
+        setButtonActions()
+        
+        dietitianButton.isSelected = true
+        dietitianButton.backgroundColor = .link
+        
+        searchBar.becomeFirstResponder()
+    }
+    
+    private func setNavItem() {
+        navigationController?.navigationBar.topItem?.titleView = searchBar
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "İptal", style: .done, target: self, action: #selector(dismissSelf))
+    }
+    
+    private func setDelegates() {
+        tableView.delegate = self
+        tableView.dataSource = self
+        searchBar.delegate = self
+    }
+    
+    private func setButtonActions() {
+        dietitianButton.addTarget(self, action: #selector(didTapDietitianButton), for: .touchUpInside)
+        userButton.addTarget(self, action: #selector(didTapUsersButton), for: .touchUpInside)
+        productsButton.addTarget(self, action: #selector(didTapMenusButton), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.addSubview(noResultLabel)
         view.addSubview(tableView)
         view.addSubview(dietitianButton)
         view.addSubview(userButton)
         view.addSubview(productsButton)
-        tableView.delegate = self
-        tableView.dataSource = self
-        searchBar.delegate = self
-        dietitianButton.isSelected = true
-        dietitianButton.backgroundColor = .link
-        view.backgroundColor = .systemBackground
-        navigationController?.navigationBar.topItem?.titleView = searchBar
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "İptal", style: .done, target: self, action: #selector(dismissSelf))
-        dietitianButton.addTarget(self, action: #selector(didTapDietitianButton), for: .touchUpInside)
-        userButton.addTarget(self, action: #selector(didTapUsersButton), for: .touchUpInside)
-        productsButton.addTarget(self, action: #selector(didTapMenusButton), for: .touchUpInside)
-        searchBar.becomeFirstResponder()
     }
     
     @objc private func didTapDietitianButton() {
@@ -136,6 +155,11 @@ class SearchViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        setFrames()
+    }
+    
+    private func setFrames() {
         dietitianButton.frame = CGRect(x: 10, y: view.top + 120, width: view.width/3-10, height: 20)
         userButton.frame = CGRect(x: dietitianButton.right + 5, y: view.top + 120, width: view.width/3-10, height: 20)
         productsButton.frame = CGRect(x: userButton.right + 5, y: view.top + 120, width: view.width/3-10, height: 20)

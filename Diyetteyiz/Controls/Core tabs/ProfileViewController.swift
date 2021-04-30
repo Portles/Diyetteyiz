@@ -111,9 +111,19 @@ class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .systemBackground
         
+        addSubviews()
+        setButtonActions()
+        
+        navigationItem.title = "Profil"
+    }
+    
+    private func setButtonActions() {
+        followButton.addTarget(self, action: #selector(didTapFollowButton), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.addSubview(headerView)
         view.addSubview(profilePhoto)
         view.addSubview(fullName)
@@ -121,12 +131,6 @@ class ProfileViewController: UIViewController {
         view.addSubview(starRate)
         view.addSubview(followButton)
         view.addSubview(tableView)
-        
-        
-        
-        followButton.addTarget(self, action: #selector(didTapFollowButton), for: .touchUpInside)
-        
-        navigationItem.title = "Profil"
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -312,6 +316,11 @@ class ProfileViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        setFrames()
+    }
+    
+    private func setFrames() {
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width+100, height: view.height/4.0)
         
         profilePhoto.frame = CGRect(x: (view.width/2)-100, y: view.top+150, width: 200, height: 200)
@@ -323,19 +332,7 @@ class ProfileViewController: UIViewController {
         followButton.frame = CGRect(x: starRate.right, y: bio.bottom + 10, width: 200, height: 52)
         tableView.frame = CGRect(x: 0, y: followButton.bottom, width: view.width, height: 300)
         
-        configureHeaderView()
-    }
-    
-    private func configureHeaderView(){
-        guard headerView.subviews.count == 1 else{
-            return
-        }
-        guard let backgoundView = headerView.subviews.first else {
-            return
-        }
-        backgoundView.frame = headerView.bounds
-        
-        backgoundView.layer.zPosition = 1
+        UIView.configureHeaderView(with: headerView)
     }
 }
 

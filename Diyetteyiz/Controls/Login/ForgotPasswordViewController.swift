@@ -73,19 +73,26 @@ class ForgotPasswordViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.backgroundColor = .systemBackground
+        
+        addSubviews()
+        
+        setButtonActions()
+        
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
+    }
+    
+    private func setButtonActions() {
+        sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.addSubview(headerLabel)
         view.addSubview(headerInfoLabel)
         view.addSubview(emailField)
         view.addSubview(sendButton)
         view.addSubview(warnLabel)
         view.addSubview(headerView)
-        
-        sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
-        
-        view.backgroundColor = .systemBackground
-        
-        navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
     
     @objc private func didTapSendButton() {
@@ -112,20 +119,13 @@ class ForgotPasswordViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    private func configureHeaderView(){
-        guard headerView.subviews.count == 1 else{
-            return
-        }
-        guard let backgoundView = headerView.subviews.first else {
-            return
-        }
-        backgoundView.frame = headerView.bounds
-        
-        backgoundView.layer.zPosition = 1
-    }
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        setFrames()
+    }
+    
+    private func setFrames() {
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width, height: view.height/4.0)
         
         headerLabel.frame = CGRect(x: (view.width/2)-100, y: view.top + 200, width: 200, height: 20)
@@ -134,7 +134,7 @@ class ForgotPasswordViewController: UIViewController {
         sendButton.frame = CGRect(x: 30, y: emailField.bottom+50, width: view.width-60, height: 52)
         warnLabel.frame = CGRect(x: (view.width/2)-200, y: sendButton.bottom + 20, width: 400, height: 80)
         
-        configureHeaderView()
+        UIView.configureHeaderView(with: headerView)
     }
 }
 

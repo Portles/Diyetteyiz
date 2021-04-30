@@ -59,19 +59,25 @@ class Register1_3ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
 
+        addSubviews()
+        setButtonActions()
+        
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
+    }
+    
+    private func setButtonActions() {
+        notificationsButton.addTarget(self, action: #selector(didNotificationButton), for: .touchUpInside)
+        continueButton.addTarget(self, action: #selector(didTapContinueButton), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.addSubview(headerView)
         view.addSubview(headerLabel)
         view.addSubview(headerInfoLabel)
         view.addSubview(notificationsButton)
         view.addSubview(continueButton)
-        
-        notificationsButton.addTarget(self, action: #selector(didNotificationButton), for: .touchUpInside)
-        continueButton.addTarget(self, action: #selector(didTapContinueButton), for: .touchUpInside)
-        
-        navigationController?.interactivePopGestureRecognizer?.delegate = nil
-        
-        view.backgroundColor = .systemBackground
     }
     
     @objc private func didNotificationButton() {
@@ -91,6 +97,10 @@ class Register1_3ViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        setFrames()
+    }
+    
+    private func setFrames() {
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width, height: view.height/4.0)
         
         headerLabel.frame = CGRect(x: (view.width/2)-100, y: view.top + 100, width: 200, height: 20)
@@ -100,19 +110,6 @@ class Register1_3ViewController: UIViewController {
         notificationsButton.frame = CGRect(x: (view.width/2)-(buttonSize/2), y: headerInfoLabel.bottom+40, width: buttonSize, height: buttonSize)
         continueButton.frame = CGRect(x: 30, y: notificationsButton.bottom + 100, width: view.width-60, height: 52)
         
-        configureHeaderView()
-    }
-
-    
-    private func configureHeaderView(){
-        guard headerView.subviews.count == 1 else{
-            return
-        }
-        guard let backgoundView = headerView.subviews.first else {
-            return
-        }
-        backgoundView.frame = headerView.bounds
-        
-        backgoundView.layer.zPosition = 1
+        UIView.configureHeaderView(with: headerView)
     }
 }

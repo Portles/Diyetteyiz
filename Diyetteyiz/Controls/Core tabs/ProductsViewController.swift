@@ -167,6 +167,18 @@ class ProductsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        addSubviews()
+        setButtonActions()
+        
+        navigationItem.title = "Satın Alımlar"
+    }
+    
+    private func setButtonActions() {
+        subscriptionButton.addTarget(self, action: #selector(didTapSubsicriptionsButton), for: .touchUpInside)
+        seeRecordsButton.addTarget(self, action: #selector(didTapRecordsButton), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.insertSubview(noResultLabel, aboveSubview: headerView)
         view.addSubview(headerView)
         view.addSubview(myImageView)
@@ -181,11 +193,6 @@ class ProductsViewController: UIViewController {
         view.addSubview(todaysReportButton)
         view.addSubview(progressPercentLabel)
         view.addSubview(seeRecordsButton)
-        
-        subscriptionButton.addTarget(self, action: #selector(didTapSubsicriptionsButton), for: .touchUpInside)
-        seeRecordsButton.addTarget(self, action: #selector(didTapRecordsButton), for: .touchUpInside)
-        
-        navigationItem.title = "Satın Alımlar"
     }
     
     @objc private func didTapSubsicriptionsButton() {
@@ -380,6 +387,11 @@ class ProductsViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        setFrames()
+    }
+    
+    private func setFrames() {
         noResultLabel.frame = view.bounds
         
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width+100, height: view.height/4.0)
@@ -399,19 +411,6 @@ class ProductsViewController: UIViewController {
         progressPercentLabel.frame = CGRect(x: 30, y: todaysReportButton.bottom+40, width: view.width-60, height: 52)
         seeRecordsButton.frame = CGRect(x: 30, y: progressPercentLabel.bottom+10, width: view.width-60, height: 52)
         
-        configureHeaderView()
+        UIView.configureHeaderView(with: headerView)
     }
-    
-    private func configureHeaderView(){
-        guard headerView.subviews.count == 1 else{
-            return
-        }
-        guard let backgoundView = headerView.subviews.first else {
-            return
-        }
-        backgoundView.frame = headerView.bounds
-        
-        backgoundView.layer.zPosition = 1
-    }
-
 }

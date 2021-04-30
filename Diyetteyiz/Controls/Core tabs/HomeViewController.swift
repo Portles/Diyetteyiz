@@ -117,8 +117,15 @@ class HomeViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        setFrames()
+    }
+    
+    private func setFrames() {
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width+100, height: view.height/4.0)
-        configureHeaderView()
+        
+        UIView.configureHeaderView(with: headerView)
+        
         dietitiansLabel.frame = CGRect(x: 30, y: 100, width: 300, height: 52)
         dietitianCollectionView?.frame = CGRect(x: 0, y: dietitiansLabel.bottom, width: view.width, height: 150).integral
         usersLabel.frame = CGRect(x: 30, y: 300, width: 300, height: 52)
@@ -133,18 +140,6 @@ class HomeViewController: UIViewController {
         let nav = UINavigationController(rootViewController: vc)
         nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true)
-    }
-    
-    private func configureHeaderView(){
-        guard headerView.subviews.count == 1 else{
-            return
-        }
-        guard let backgoundView = headerView.subviews.first else {
-            return
-        }
-        backgoundView.frame = headerView.bounds
-        
-        backgoundView.layer.zPosition = 1
     }
     
     override func viewDidAppear(_ animated: Bool) {

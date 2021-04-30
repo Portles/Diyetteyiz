@@ -102,17 +102,9 @@ class AddItemInfoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.addSubview(itemField)
-        view.addSubview(itemTypeField)
-        view.addSubview(itemCalorieField)
-        view.addSubview(neededMesureField)
+        addSubviews()
         
-        view.addSubview(confirmButton)
-        view.addSubview(cancelButton)
-        
-        
-        picker.delegate = self
-        picker.dataSource = self
+        setDelegates()
         
         itemTypeField.inputView = picker
         
@@ -122,10 +114,23 @@ class AddItemInfoViewController: UIViewController {
         cancelButton.addTarget(self, action: #selector(deleteItem), for: .touchUpInside)
         
         view.backgroundColor = .systemBackground
-        
     }
     
-    func createToolbar() {
+    private func setDelegates() {
+        picker.delegate = self
+        picker.dataSource = self
+    }
+    
+    private func addSubviews() {
+        view.addSubview(itemField)
+        view.addSubview(itemTypeField)
+        view.addSubview(itemCalorieField)
+        view.addSubview(neededMesureField)
+        view.addSubview(confirmButton)
+        view.addSubview(cancelButton)
+    }
+    
+    private func createToolbar() {
         let toolBar = UIToolbar()
         toolBar.sizeToFit()
         
@@ -141,6 +146,11 @@ class AddItemInfoViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        setFrames()
+    }
+    
+    private func setFrames() {
         itemField.frame = CGRect(x: 30, y: 300, width: view.width - 60, height: 52)
         itemTypeField.frame = CGRect(x: 30, y: itemField.bottom + 20, width: 100, height: 36)
         neededMesureField.frame = CGRect(x: 30, y: itemTypeField.bottom + 20, width: view.width - 60, height: 52)

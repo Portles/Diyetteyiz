@@ -22,15 +22,26 @@ class ProductSettingsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.addSubview(button)
-        button.addTarget(self, action: #selector(didTapCancelButton), for: .touchUpInside)
-        
         view.backgroundColor = .systemBackground
+        
+        addSubviews()
+        setButtonActions()
+    }
+    
+    private func addSubviews() {
+        view.addSubview(button)
+    }
+    
+    private func setButtonActions() {
+        button.addTarget(self, action: #selector(didTapCancelButton), for: .touchUpInside)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        setFrames()
+    }
+    
+    private func setFrames() {
         button.frame = CGRect(x: 30, y: 200, width: view.width - 60, height: 52)
     }
     

@@ -43,19 +43,27 @@ class AddMealViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.addSubview(tableView)
-        view.addSubview(confirmButton)
-        view.addSubview(cancelButton)
+        addSubviews()
 
-        tableView.delegate = self
-        tableView.dataSource = self
+        setDelegates()
         
         confirmButton.addTarget(self, action: #selector(didTapConfirmButton), for: .touchUpInside)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .done, target: self, action: #selector(didTapPlusButton))
         
         view.backgroundColor = .systemBackground
+    }
+    
+    private func setDelegates() {
+        tableView.delegate = self
+        tableView.dataSource = self
         
+    }
+    
+    private func addSubviews() {
+        view.addSubview(tableView)
+        view.addSubview(confirmButton)
+        view.addSubview(cancelButton)
     }
     
     @objc private func didTapConfirmButton() {
@@ -80,6 +88,10 @@ class AddMealViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        setFrames()
+    }
+    
+    private func setFrames() {
         tableView.frame = CGRect(x: 0, y: 100, width: view.width, height: view.height - 300)
         confirmButton.frame = CGRect(x: 30, y: tableView.bottom + 10, width: view.width - 60, height: 52)
         cancelButton.frame = CGRect(x: 30, y: confirmButton.bottom + 10, width: view.width - 60, height: 52)

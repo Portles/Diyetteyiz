@@ -141,7 +141,24 @@ class Register1_2ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.backgroundColor = .systemBackground
+        
+        addSubviews()
+        setButtonActions()
+        
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    private func setButtonActions() {
+        continueButton.addTarget(self, action: #selector(didTapContinueButton), for: .touchUpInside)
+        radioButton.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+    }
+    
+    private func addSubviews() {
         view.addSubview(headerView)
         view.addSubview(headerLabel)
         view.addSubview(nameField)
@@ -152,29 +169,19 @@ class Register1_2ViewController: UIViewController {
         view.addSubview(radioButton)
         view.addSubview(radiobuttonLabel)
         view.addSubview(continueButton)
-        
-        continueButton.addTarget(self, action: #selector(didTapContinueButton), for: .touchUpInside)
-        radioButton.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
-        
-        navigationController?.interactivePopGestureRecognizer?.delegate = nil
-        view.backgroundColor = .systemBackground
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
-
-        tap.cancelsTouchesInView = false
-
-        view.addGestureRecognizer(tap)
     }
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
     
-    
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        setFrames()
+    }
+    
+    private func setFrames() {
         headerView.frame = CGRect(x: 0, y: 0.0, width: view.width, height: view.height/4.0)
         
         headerLabel.frame = CGRect(x: 30, y: view.top + 125, width: 200, height: 100)
@@ -187,7 +194,7 @@ class Register1_2ViewController: UIViewController {
         radiobuttonLabel.frame = CGRect(x: radioButton.right+10, y: repassField.top+100, width: 300, height: 52)
         continueButton.frame = CGRect(x: 30, y: radiobuttonLabel.bottom + 52, width: view.width-60, height: 52)
         
-        configureHeaderView()
+        UIView.configureHeaderView(with: headerView)
     }
     
     @objc func buttonAction(){
@@ -198,18 +205,6 @@ class Register1_2ViewController: UIViewController {
             radioButton.isSelected = false
             isCheckedLegal = false
         }
-    }
-    
-    private func configureHeaderView(){
-        guard headerView.subviews.count == 1 else{
-            return
-        }
-        guard let backgoundView = headerView.subviews.first else {
-            return
-        }
-        backgoundView.frame = headerView.bounds
-        
-        backgoundView.layer.zPosition = 1
     }
 
     @objc private func didTapContinueButton() {

@@ -26,13 +26,24 @@ class NotificationsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.backgroundColor = .systemBackground
         
+        addSubviews()
+        setDelegates()
+        setNavigationItems()
+    }
+    
+    private func setNavigationItems() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Geri Dön", style: .done, target: self, action: #selector(didTapBackButton))
+    }
+    
+    private func addSubviews() {
+        view.addSubview(tableView)
+    }
+    
+    private func setDelegates() {
         tableView.dataSource = self
         tableView.delegate = self
-        view.addSubview(tableView)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Geri Dön", style: .done, target: self, action: #selector(didTapBackButton))
     }
     
     override func viewDidAppear(_ animated: Bool) {

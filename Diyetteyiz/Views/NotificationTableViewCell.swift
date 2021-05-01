@@ -50,11 +50,11 @@ class NotificationTableViewCell: UITableViewCell {
                                      height: 70)
         
         headerLabel.frame = CGRect(x: UserImageView.right + 10,
-                                     y: 10,
+                                     y: 5,
                                      width: contentView.width - 20 - UserImageView.width,
                                      height: 50)
         
-        infoLabel.frame = CGRect(x: UserImageView.right + 10, y: 40, width: contentView.width - 20 - UserImageView.width, height: 50)
+        infoLabel.frame = CGRect(x: UserImageView.right + 10, y: 35, width: contentView.width - 20 - UserImageView.width, height: 50)
 
     }
     
@@ -64,18 +64,18 @@ class NotificationTableViewCell: UITableViewCell {
         
 //        let seyfmeyil = DatabaseManager.safeEmail(emailAdress: model.email)
         
-//        let path = "img/\(seyfmeyil)_PP.png"
-//        StorageManager.shared.downloadURL(for: path, completion: { [weak self]result in
-//            switch result {
-//            case .success(let url):
+        let path = DatabaseManager.getPhotoLoc(emailAdress: DatabaseManager.notSafeEmail(emailAdress: model.photoLoc ?? ""))
+        StorageManager.shared.downloadURL(for: path, completion: { [weak self]result in
+            switch result {
+            case .success(let url):
                 
-//                DispatchQueue.main.async {
-//                    self?.UserImageView.sd_setImage(with: url, completed: nil)
-//                }
+                DispatchQueue.main.async {
+                    self?.UserImageView.sd_setImage(with: url, completed: nil)
+                }
                 
-//            case .failure(let error):
-//                print("PP indirme linki alınamadı. \(error)")
-//            }
-//        })
+            case .failure(let error):
+                print("PP indirme linki alınamadı. \(error)")
+            }
+        })
     }
 }

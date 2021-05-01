@@ -24,6 +24,10 @@ final class DatabaseManager {
         safeEmail = safeEmail.replacingOccurrences(of: "_", with: "@")
         return safeEmail
     }
+    static func getPhotoLoc(emailAdress: String) -> String {
+        let safeEmail = emailAdress.replacingOccurrences(of: "|", with: "_")
+        return safeEmail
+    }
 }
 
 extension DatabaseManager {
@@ -87,7 +91,8 @@ extension DatabaseManager {
                         "header": "Kaydınız hazır",
                         "info": "Artık program satın alabilirsiniz. 👍",
                         "isRead": false,
-                        "time": dateString
+                        "time": dateString,
+                        "photoLoc": "img/" + user.safeEmail + "|PP.png"
                     ] as [String : Any]
                     guard let strongSelf = self else {
                         return
@@ -106,7 +111,8 @@ extension DatabaseManager {
                             "header": "Kaydınız hazır",
                             "info": "Artık program satın alabilirsiniz. 👍",
                             "isRead": false,
-                            "time": dateString
+                            "time": dateString,
+                            "photoLoc": "img/" + user.safeEmail + "|PP.png"
                         ]
                     ]
                     
@@ -427,7 +433,8 @@ extension DatabaseManager {
                         "header": "Diyet Programı",
                         "info": "Program bize ulaştı kabul için beklemede kal. 👍",
                         "isRead": false,
-                        "time": dateString
+                        "time": dateString,
+                        "photoLoc": "img/" + safeMail + "|pp.png"
                     ] as [String : Any]
                     guard let strongSelf = self else {
                         return
@@ -446,7 +453,8 @@ extension DatabaseManager {
                             "header": "Diyet Programı",
                             "info": "Program bize ulaştı kabul için beklemede kal. 👍",
                             "isRead": false,
-                            "time": dateString
+                            "time": dateString,
+                            "photoLoc": "img/" + safeMail + "|pp.png"
                         ]
                     ]
                     
@@ -497,7 +505,7 @@ extension DatabaseManager {
                         "days": miniProduct.days!,
                         "price": miniProduct.price!,
                         "dietitianBind": safeMail,
-                        "headerPicLoc": miniProduct.headerPicLoc!
+                        "photoLoc": miniProduct.headerPicLoc!
                     ] as [String : Any]
                     guard let strongSelf = self else {
                         return
@@ -518,7 +526,7 @@ extension DatabaseManager {
                             "days": miniProduct.days!,
                             "price": miniProduct.price!,
                             "dietitianBind": safeMail,
-                            "headerPicLoc": miniProduct.headerPicLoc!
+                            "photoLoc": miniProduct.headerPicLoc!
                         ]
                     ]
                     
@@ -594,7 +602,8 @@ extension DatabaseManager {
                         "header": "Diyet Satın alındı",
                         "info": "Saat 00.00'da diyetine başlayabilirsin.",
                         "isRead": false,
-                        "time": dateString
+                        "time": dateString,
+                        "photoLoc": "img/" + dietitianEmail + "|PP.png"
                     ] as [String : Any]
                     guard let strongSelf = self else {
                         return
@@ -613,7 +622,8 @@ extension DatabaseManager {
                             "header": "Diyet Satın alındı",
                             "info": "Saat 00.00'da diyetine başlayabilirsin.",
                             "isRead": false,
-                            "time": dateString
+                            "time": dateString,
+                            "photoLoc": "img/" + dietitianEmail + "|PP.png"
                         ]
                     ]
                     
@@ -707,7 +717,7 @@ extension DatabaseManager {
     // MARK: - ADD RECORD
     
     public func InsertNewDietRecord(with product: ItemRecords, whichDay: Int, leftDays: Int, nextDay: Int, completion: @escaping (Bool) -> Void){
-        let succesRate = 1/whichDay+leftDays
+        let succesRate = Int((Float(whichDay+1)/Float(whichDay+leftDays))*100)
         let safeEmail = DatabaseManager.safeEmail(emailAdress: UserDefaults.standard.string(forKey: "email")!)
         let programId = UserDefaults.standard.string(forKey: "programId")!
         
@@ -781,10 +791,11 @@ extension DatabaseManager {
             strongSelf.database.child("\(safeEmail)/notifications").observeSingleEvent(of: .value, with: { [weak self]snapshot in
                 if var userNotification = snapshot.value as? [[String: Any]] {
                     let newElement = [
-                        "header": "İlerleme \(whichDay). gün",
+                        "header": "İlerleme \(whichDay+1). gün",
                         "info": "İlerlemen kaydedildi. Programına uymayı unutma. 😁👍",
                         "isRead": false,
-                        "time": dateString
+                        "time": dateString,
+                        "photoLoc": "img/" + ProductsViewController.ongProduct.fromWho! + "|PP.png"
                     ] as [String : Any]
                     guard let strongSelf = self else {
                         return
@@ -800,10 +811,11 @@ extension DatabaseManager {
                 } else {
                     let newCollection: [[String: Any]] = [
                         [
-                            "header": "İlerleme \(whichDay). gün",
+                            "header": "İlerleme \(whichDay+1). gün",
                             "info": "İlerlemen kaydedildi. Programına uymayı unutma. 😁👍",
                             "isRead": false,
-                            "time": dateString
+                            "time": dateString,
+                            "photoLoc": "img/" + ProductsViewController.ongProduct.fromWho! + "|PP.png"
                         ]
                     ]
                     
@@ -924,6 +936,7 @@ struct NotificationModel {
     let info: String?
     let isRead: Bool?
     let time: Date?
+    let photoLoc: String?
 }
 
 struct SearchResult {

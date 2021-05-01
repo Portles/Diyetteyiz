@@ -9,7 +9,7 @@ import UIKit
 import JGProgressHUD
 
 class SearchProfileViewController: UIViewController {
-
+    
     private let email: String?
     private let name: String?
     
@@ -20,6 +20,8 @@ class SearchProfileViewController: UIViewController {
     private var dietitianData = [DietitianViewModel]()
     
     public var dietitianCompletion: ((DietitianViewModel) -> (Void))?
+    
+    private var menuResults = [MenuViewModel]()
     
     private let spinner = JGProgressHUD(style: .dark)
     
@@ -147,7 +149,7 @@ class SearchProfileViewController: UIViewController {
         bio.frame = CGRect(x: (view.width/2)-((view.width-60)/2), y: fullName.bottom + 5, width: view.width-60, height: 180)
         starRate.frame = CGRect(x: 30, y: bio.bottom + 10, width: 175, height: 52)
         followButton.frame = CGRect(x: starRate.right, y: bio.bottom + 10, width: 200, height: 52)
-        tableView.frame = CGRect(x: 0, y: followButton.bottom, width: view.width, height: 300)
+        tableView.frame = CGRect(x: 0, y: followButton.bottom + 5, width: view.width, height: 300)
         
         UIView.configureHeaderView(with: headerView)
     }
@@ -173,21 +175,21 @@ class SearchProfileViewController: UIViewController {
     }
     
     private func getDietitianData(query: String) {
-            dietitianData.removeAll()
-            if hasFetched {
-                filterDietitian(with: query)
-            }else{
-                DatabaseManager.shared.getAllDietitians(completion: { [weak self]result in
-                    switch result {
-                    case .success(let dietitianCollection):
-                        self?.hasFetched = true
-                        self?.dietitians = dietitianCollection
-                        self?.filterDietitian(with: query)
-                    case .failure(let error):
-                        print("Diyetisyen bilgilerine erişilemedi: \(error)")
-                    }
-                })
-            }
+        dietitianData.removeAll()
+        if hasFetched {
+            filterDietitian(with: query)
+        }else{
+            DatabaseManager.shared.getAllDietitians(completion: { [weak self]result in
+                switch result {
+                case .success(let dietitianCollection):
+                    self?.hasFetched = true
+                    self?.dietitians = dietitianCollection
+                    self?.filterDietitian(with: query)
+                case .failure(let error):
+                    print("Diyetisyen bilgilerine erişilemedi: \(error)")
+                }
+            })
+        }
     }
     func filterDietitian(with term: String) {
         guard let currentUserEmail = email, hasFetched else {
@@ -199,7 +201,7 @@ class SearchProfileViewController: UIViewController {
         let results: [DietitianViewModel] = dietitians.filter({
             guard let email = $0["email"],
                   email as! String == safeMaille else {
-                    return false
+                return false
             }
             
             return (email as AnyObject).hasPrefix(safeMaille.lowercased())
@@ -211,29 +213,74 @@ class SearchProfileViewController: UIViewController {
             return DietitianViewModel(name: name as? String, surname: surName as? String, bio: bio as? String, starRate: starRate as? Double, gender: gender as? String)
         })
         self.dietitianData = results
-
+        
         fullName.text = dietitianData[0].name! + " " + dietitianData[0].surname!
         bio.text = dietitianData[0].bio
         starRate.text = "Yıldız: " + String(dietitianData[0].starRate!) + "/5.0"
+        
+        getMenu()
+    }
+    
+    
+    private func getMenu() {
+        hasFetched = false
+        if hasFetched {
+            filterMenus()
+        }else{
+            DatabaseManager.shared.getAllMenus(completion: { [weak self]result in
+                switch result {
+                case .success(let usersCollection):
+                    self?.hasFetched = true
+                    self?.users = usersCollection
+                    self?.filterMenus()
+                case .failure(let error):
+                    print("Kullanıcı bilgilerine erişilemedi: \(error)")
+                }
+            })
+        }
+    }
+    
+    private func filterMenus() {
+        
+        let dietitian = DatabaseManager.safeEmail(emailAdress: self.email!)
+        
+        let results: [MenuViewModel] = users.filter({
+            guard let email = $0["dietitianBind"],
+                  email as! String == dietitian else {
+                return false
+            }
+            
+            return (email as AnyObject).hasPrefix(dietitian.lowercased())
+        }).compactMap({
+            guard let header = $0["header"] as? String, let info = $0["info"] as? String , let price = $0["price"] as? String , let dietitianBind = $0["dietitianBind"] as? String , let days = $0["days"] as? Int , let headerPicLoc = $0["headerPicLoc"] as? String else {
+                return nil
+            }
+            
+            return MenuViewModel(header: header, info: info, price: price, dietitianBind: dietitianBind, days: days, headerPicLoc: headerPicLoc)
+        })
+        self.menuResults = results
+        
+        tableView.reloadData()
     }
     
     private func getUserData(query: String) {
-            data.removeAll()
-            if hasFetched {
-                filterUser(with: query)
-            }else{
-                DatabaseManager.shared.getAllUsers(completion: { [weak self]result in
-                    switch result {
-                    case .success(let usersCollection):
-                        self?.hasFetched = true
-                        self?.users = usersCollection
-                        self?.filterUser(with: query)
-                    case .failure(let error):
-                        print("Kişi bilgilerine erişilemedi: \(error)")
-                    }
-                })
-            }
+        data.removeAll()
+        if hasFetched {
+            filterUser(with: query)
+        }else{
+            DatabaseManager.shared.getAllUsers(completion: { [weak self]result in
+                switch result {
+                case .success(let usersCollection):
+                    self?.hasFetched = true
+                    self?.users = usersCollection
+                    self?.filterUser(with: query)
+                case .failure(let error):
+                    print("Kişi bilgilerine erişilemedi: \(error)")
+                }
+            })
+        }
     }
+    
     func filterUser(with term: String) {
         guard let currentUserEmail = email, hasFetched else {
             return
@@ -244,7 +291,7 @@ class SearchProfileViewController: UIViewController {
         let results: [ProfileViewModel] = users.filter({
             guard let email = $0["email"],
                   email as! String == safeMaille else {
-                    return false
+                return false
             }
             
             return (email as AnyObject).hasPrefix(safeMaille.lowercased())
@@ -256,7 +303,7 @@ class SearchProfileViewController: UIViewController {
             return ProfileViewModel(name: name as? String, surname: surName as? String, bio: bio as? String, starRate: starRate as? Double, height: height as? String, fat: fat as? String, gender: gender as? String)
         })
         self.data = results
-
+        
         fullName.text = data[0].name! + " " + data[0].surname!
         bio.text = data[0].bio
         starRate.text = "Yıldız: " + String(data[0].starRate!) + "/5.0"
@@ -286,10 +333,17 @@ class SearchProfileViewController: UIViewController {
 
 extension SearchProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return menuResults.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
+        let model = menuResults[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: DietitianProfileMenusTableViewCell.identifier, for: indexPath) as! DietitianProfileMenusTableViewCell
+        cell.configure(with: model)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 180
     }
 }

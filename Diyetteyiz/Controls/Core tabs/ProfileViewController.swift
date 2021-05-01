@@ -37,6 +37,8 @@ class ProfileViewController: UIViewController {
     
     public var dietitianCompletion: ((DietitianViewModel) -> (Void))?
     
+    private var menuResults = [MenuViewModel]()
+    
     private let spinner = JGProgressHUD(style: .dark)
     
     private var users = [[String: Any]]()
@@ -236,6 +238,8 @@ class ProfileViewController: UIViewController {
         fullName.text = dietitianData[0].name! + " " + dietitianData[0].surname!
         bio.text = dietitianData[0].bio
         starRate.text = "Yıldız: " + String(dietitianData[0].starRate!) + "/5.0"
+        
+        getMenu()
     }
     
     private func configureNavigationBar() {
@@ -312,6 +316,47 @@ class ProfileViewController: UIViewController {
         bio.text = data[0].bio
         starRate.text = "Yıldız: " + String(data[0].starRate!) + "/5.0"
     }
+    
+    private func getMenu() {
+        hasFetched = false
+        if hasFetched {
+            filterMenus()
+        }else{
+            DatabaseManager.shared.getAllMenus(completion: { [weak self]result in
+                switch result {
+                case .success(let usersCollection):
+                    self?.hasFetched = true
+                    self?.users = usersCollection
+                    self?.filterMenus()
+                case .failure(let error):
+                    print("Kullanıcı bilgilerine erişilemedi: \(error)")
+                }
+            })
+        }
+    }
+    
+    private func filterMenus() {
+        
+        let dietitian = DatabaseManager.safeEmail(emailAdress: UserDefaults.standard.string(forKey: "email")!)
+        
+        let results: [MenuViewModel] = users.filter({
+            guard let email = $0["dietitianBind"],
+                  email as! String == dietitian else {
+                return false
+            }
+            
+            return (email as AnyObject).hasPrefix(dietitian.lowercased())
+        }).compactMap({
+            guard let header = $0["header"] as? String, let info = $0["info"] as? String , let price = $0["price"] as? String , let dietitianBind = $0["dietitianBind"] as? String , let days = $0["days"] as? Int , let headerPicLoc = $0["headerPicLoc"] as? String else {
+                return nil
+            }
+            
+            return MenuViewModel(header: header, info: info, price: price, dietitianBind: dietitianBind, days: days, headerPicLoc: headerPicLoc)
+        })
+        self.menuResults = results
+        
+        tableView.reloadData()
+    }
 
     
     override func viewDidLayoutSubviews() {
@@ -334,16 +379,36 @@ class ProfileViewController: UIViewController {
         
         UIView.configureHeaderView(with: headerView)
     }
+    
+    private func openMenu(_ model: MenuViewModel){
+        let vc = MenuViewController(with: model.dietitianBind, id: model.header, picLoc: model.headerPicLoc)
+        vc.title = "Menü"
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }
 
 
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return menuResults.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
+        let model = menuResults[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: DietitianProfileMenusTableViewCell.identifier, for: indexPath) as! DietitianProfileMenusTableViewCell
+        cell.configure(with: model)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 180
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+        let model = menuResults[indexPath.row]
+        openMenu(model)
     }
 }
 

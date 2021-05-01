@@ -53,7 +53,7 @@
 		CACECE2026012D2D00433104 /* AddDayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACECE1F26012D2D00433104 /* AddDayTableViewCell.swift */; };
 		CACECE28260137A100433104 /* AddMealTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACECE27260137A000433104 /* AddMealTableViewCell.swift */; };
 		CAD3CEE125F8E8DC00036A97 /* DietitianMenusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD3CEE025F8E8DC00036A97 /* DietitianMenusTableViewCell.swift */; };
-		CAD9693325F172E1008EA88E /* DietitianProfileMenusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD9693225F172E1008EA88E /* DietitianProfileMenusTableViewCell.swift */; };
+		CAD9693325F172E1008EA88E /* DietitianProfileMenusCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD9693225F172E1008EA88E /* DietitianProfileMenusCollectionViewCell.swift */; };
 		CADB1ABC2602260700F3EE87 /* AddItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADB1ABB2602260700F3EE87 /* AddItemViewController.swift */; };
 		CADB1AC1260229E500F3EE87 /* AddItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADB1AC0260229E500F3EE87 /* AddItemTableViewCell.swift */; };
 		CAFCF7A025FE7B9C0066C2F9 /* SearchProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFCF79F25FE7B9C0066C2F9 /* SearchProfileViewController.swift */; };
@@ -140,7 +140,7 @@
 		CACECE1F26012D2D00433104 /* AddDayTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDayTableViewCell.swift; sourceTree = "<group>"; };
 		CACECE27260137A000433104 /* AddMealTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddMealTableViewCell.swift; sourceTree = "<group>"; };
 		CAD3CEE025F8E8DC00036A97 /* DietitianMenusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietitianMenusTableViewCell.swift; sourceTree = "<group>"; };
-		CAD9693225F172E1008EA88E /* DietitianProfileMenusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietitianProfileMenusTableViewCell.swift; sourceTree = "<group>"; };
+		CAD9693225F172E1008EA88E /* DietitianProfileMenusCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietitianProfileMenusCollectionViewCell.swift; sourceTree = "<group>"; };
 		CADB1ABB2602260700F3EE87 /* AddItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddItemViewController.swift; sourceTree = "<group>"; };
 		CADB1AC0260229E500F3EE87 /* AddItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemTableViewCell.swift; sourceTree = "<group>"; };
 		CAFCF79F25FE7B9C0066C2F9 /* SearchProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchProfileViewController.swift; sourceTree = "<group>"; };
@@ -236,14 +236,12 @@
 				CA46DC5A260FD4CA006ACA62 /* ProductMealItem */,
 				CACECE1E26012D0F00433104 /* AddDiet */,
 				CA28FAFC25E651600020FC32 /* Storyboards */,
-				CAD9693225F172E1008EA88E /* DietitianProfileMenusTableViewCell.swift */,
+				CAD9693225F172E1008EA88E /* DietitianProfileMenusCollectionViewCell.swift */,
 				CAA7E19C25F40C4500281DC4 /* NotificationTableViewCell.swift */,
 				CA5345C225F7E45F007B4DA6 /* UserSearchTableViewCell.swift */,
 				CAD3CEE025F8E8DC00036A97 /* DietitianMenusTableViewCell.swift */,
-				CAB2D6FC25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift */,
 				CA2EAEFE25FCC9CF0069CAE6 /* DietitianHomeCollectionViewCell.swift */,
-				CAFCF7AC25FEA9450066C2F9 /* HomeMenusCollectionViewCell.swift */,
-				CAFCF7B125FEC28B0066C2F9 /* HomeUserCollectionViewCell.swift */,
+				CAE15D83263D84170032D0A3 /* HomePageViews */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -426,6 +424,16 @@
 				CADB1AC0260229E500F3EE87 /* AddItemTableViewCell.swift */,
 			);
 			path = AddDiet;
+			sourceTree = "<group>";
+		};
+		CAE15D83263D84170032D0A3 /* HomePageViews */ = {
+			isa = PBXGroup;
+			children = (
+				CAB2D6FC25FB70EF000A3E02 /* HomeDietitianTableViewCell.swift */,
+				CAFCF7AC25FEA9450066C2F9 /* HomeMenusCollectionViewCell.swift */,
+				CAFCF7B125FEC28B0066C2F9 /* HomeUserCollectionViewCell.swift */,
+			);
+			path = HomePageViews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -667,7 +675,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CAD9693325F172E1008EA88E /* DietitianProfileMenusTableViewCell.swift in Sources */,
+				CAD9693325F172E1008EA88E /* DietitianProfileMenusCollectionViewCell.swift in Sources */,
 				CAFCF7A025FE7B9C0066C2F9 /* SearchProfileViewController.swift in Sources */,
 				CA28FB2125E699C30020FC32 /* Register1-0ViewController.swift in Sources */,
 				CA46DC52260FCB55006ACA62 /* ProductRecordsViewController.swift in Sources */,

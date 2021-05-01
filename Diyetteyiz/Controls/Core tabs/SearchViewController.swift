@@ -16,6 +16,7 @@ class SearchViewController: UIViewController {
     
     private var users = [[String: Any]]()
     private var results = [SearchResult]()
+    private var menuResults = [MenuViewModel]()
     private var hasFetched = false
     
     private let searchBar: UISearchBar = {
@@ -125,6 +126,8 @@ class SearchViewController: UIViewController {
         productsButton.backgroundColor = .systemGreen
         
         hasFetched = false
+        
+        tableView.register(UserSearchTableViewCell.self, forCellReuseIdentifier: UserSearchTableViewCell.identifier)
     }
     
     @objc private func didTapUsersButton() {
@@ -138,6 +141,8 @@ class SearchViewController: UIViewController {
         productsButton.backgroundColor = .systemGreen
         
         hasFetched = false
+        
+        tableView.register(UserSearchTableViewCell.self, forCellReuseIdentifier: UserSearchTableViewCell.identifier)
     }
     
     @objc private func didTapMenusButton() {
@@ -151,6 +156,8 @@ class SearchViewController: UIViewController {
         productsButton.backgroundColor = .link
         
         hasFetched = false
+        
+        tableView.register(DietitianProfileMenusTableViewCell.self, forCellReuseIdentifier: DietitianProfileMenusTableViewCell.identifier)
     }
     
     override func viewDidLayoutSubviews() {
@@ -178,25 +185,52 @@ class SearchViewController: UIViewController {
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    func openMenu(_ model: MenuViewModel){
+        let vc = MenuViewController(with: model.dietitianBind, id: model.header, picLoc: model.headerPicLoc)
+        vc.title = "Menü"
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }
 
 extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return results.count
+        if productsButton.isSelected {
+            return menuResults.count
+        } else {
+            return results.count
+        }
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let model = results[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: UserSearchTableViewCell.identifier, for: indexPath) as! UserSearchTableViewCell
-        cell.configure(with: model)
-        return cell
+        if productsButton.isSelected {
+            let model = menuResults[indexPath.row]
+            let cell = tableView.dequeueReusableCell(withIdentifier: DietitianProfileMenusTableViewCell.identifier, for: indexPath) as! DietitianProfileMenusTableViewCell
+            cell.configure(with: model)
+            return cell
+        } else {
+            let model = results[indexPath.row]
+            let cell = tableView.dequeueReusableCell(withIdentifier: UserSearchTableViewCell.identifier, for: indexPath) as! UserSearchTableViewCell
+            cell.configure(with: model)
+            return cell
+        }
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let model = results[indexPath.row]
-        openConversation(model)
+        if productsButton.isSelected {
+            let model = menuResults[indexPath.row]
+            openMenu(model)
+        } else {
+            let model = results[indexPath.row]
+            openConversation(model)
+        }
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90
+        if productsButton.isSelected {
+            return 180
+        } else {
+            return 90
+        }
     }
 }
 
@@ -210,6 +244,7 @@ extension SearchViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
         
         results.removeAll()
+        menuResults.removeAll()
         tableView.reloadData()
         
         spinner.show(in: view)
@@ -219,9 +254,50 @@ extension SearchViewController: UISearchBarDelegate {
         } else if dietitianButton.isSelected {
             searchDietitians(query: text)
             self.spinner.dismiss()
+        } else if productsButton.isSelected {
+            getMenu(with: text)
+            self.spinner.dismiss()
         }
-        
     }
+    
+    private func getMenu(with query: String) {
+        hasFetched = false
+        if hasFetched {
+            filterMenus(with: query)
+        }else{
+            DatabaseManager.shared.getAllMenus(completion: { [weak self]result in
+                switch result {
+                case .success(let usersCollection):
+                    self?.hasFetched = true
+                    self?.users = usersCollection
+                    self?.filterMenus(with: query)
+                case .failure(let error):
+                    print("Kullanıcı bilgilerine erişilemedi: \(error)")
+                }
+            })
+        }
+    }
+    
+    private func filterMenus(with term: String) {
+        
+        let results: [MenuViewModel] = users.filter({
+            guard let name = ($0["header"] as? String)?.lowercased() else {
+                return false
+            }
+            
+            return (name as AnyObject).hasPrefix(term.lowercased())
+        }).compactMap({
+            guard let header = $0["header"] as? String, let info = $0["info"] as? String , let price = $0["price"] as? String , let dietitianBind = $0["dietitianBind"] as? String , let days = $0["days"] as? Int , let headerPicLoc = $0["headerPicLoc"] as? String else {
+                return nil
+            }
+            
+            return MenuViewModel(header: header, info: info, price: price, dietitianBind: dietitianBind, days: days, headerPicLoc: headerPicLoc)
+        })
+        self.menuResults = results
+        
+        updateUI()
+    }
+    
     func searchDietitians(query: String) {
         if hasFetched {
             filterUser(with: query)
@@ -283,7 +359,7 @@ extension SearchViewController: UISearchBarDelegate {
         updateUI()
     }
     func updateUI() {
-        if results.isEmpty {
+        if !(results.isEmpty || menuResults.isEmpty) {
             noResultLabel.isHidden = false
             tableView.isHidden = true
         } else {

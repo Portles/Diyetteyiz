@@ -9,7 +9,7 @@ import UIKit
 import JGProgressHUD
 
 class NotificationsViewController: UIViewController {
-
+    
     public var completion: ((NotificationModel) -> (Void))?
     
     private let spinner = JGProgressHUD(style: .dark)
@@ -19,7 +19,7 @@ class NotificationsViewController: UIViewController {
     private var hasFetched = false
     
     private let tableView: UITableView = {
-       let tableView = UITableView()
+        let tableView = UITableView()
         tableView.register(NotificationTableViewCell.self, forCellReuseIdentifier: NotificationTableViewCell.identifier)
         return tableView
     }()
@@ -62,34 +62,34 @@ class NotificationsViewController: UIViewController {
     }
     
     private func getNotificationData(query: String) {
-            results.removeAll()
-            if hasFetched {
-                filterUser(with: query)
-            }else{
-                DatabaseManager.shared.getAllNotifications(with: UserDefaults.standard.string(forKey: "email")!,completion: { [weak self]result in
-                    switch result {
-                    case .success(let notificatonCollection):
-                        self?.hasFetched = true
-                        self?.notifications = notificatonCollection
-                        self?.filterUser(with: query)
-                    case .failure(let error):
-                        print("Kişi bilgilerine erişilemedi: \(error)")
-                    }
-                })
-            }
+        results.removeAll()
+        if hasFetched {
+            filterUser(with: query)
+        }else{
+            DatabaseManager.shared.getAllNotifications(with: UserDefaults.standard.string(forKey: "email")!,completion: { [weak self]result in
+                switch result {
+                case .success(let notificatonCollection):
+                    self?.hasFetched = true
+                    self?.notifications = notificatonCollection
+                    self?.filterUser(with: query)
+                case .failure(let error):
+                    print("Kişi bilgilerine erişilemedi: \(error)")
+                }
+            })
+        }
     }
     func filterUser(with term: String) {        
         let results: [NotificationModel] = notifications.compactMap({
-            guard let header = $0["header"], let info = $0["info"], let isRead = $0["isRead"], let time = $0["time"] else {
+            guard let header = $0["header"], let info = $0["info"], let isRead = $0["isRead"], let time = $0["time"], let photoLoc = $0["photoLoc"] else {
                 return nil
             }
             
-            return NotificationModel(header: header as? String, info: info as? String, isRead: isRead as? Bool, time: time as? Date)
+            return NotificationModel(header: header as? String, info: info as? String, isRead: isRead as? Bool, time: time as? Date, photoLoc: photoLoc as? String)
         })
         self.results = results
         tableView.reloadData()
     }
-
+    
 }
 
 extension NotificationsViewController: UITableViewDelegate, UITableViewDataSource {
@@ -105,6 +105,10 @@ extension NotificationsViewController: UITableViewDelegate, UITableViewDataSourc
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 90
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
     }
     
 }

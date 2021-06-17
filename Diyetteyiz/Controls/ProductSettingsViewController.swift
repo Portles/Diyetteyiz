@@ -46,7 +46,17 @@ class ProductSettingsViewController: UIViewController {
     }
     
     @objc private func didTapCancelButton() {
-        
+        let email = UserDefaults.standard.string(forKey: "email")!
+        DatabaseManager.shared.complateProgram(userEmail: email, completion: {result in
+            if result == true {
+                self.presentThaknsForUsing()
+            }
+        })
     }
     
+    private func presentThaknsForUsing() {
+        let alert = UIAlertController(title: "Teşekkürler", message: "Diyetteyiz uygulamasını kullandığınız için teşekkür ederiz", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Tamamla", style: .destructive, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
 }

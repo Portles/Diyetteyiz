@@ -164,6 +164,17 @@ class ProductsViewController: UIViewController {
         return label
     }()
     
+    private let adminToolsButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Uygulama Bilgileri", for: .normal)
+        button.backgroundColor = .systemRed
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.layer.masksToBounds = true
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -219,8 +230,29 @@ class ProductsViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         hide()
-        
-        checkBuyedBefore()
+        let perm: Int = Int(UserDefaults.standard.string(forKey: "permission") ?? "1")!
+        if perm == 3 {
+            loadAdministratorTools()
+        } else {
+            checkBuyedBefore()
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        adminToolsButton.isHidden = true
+    }
+    
+    private func loadAdministratorTools() {
+        view.addSubview(adminToolsButton)
+        adminToolsButton.frame = CGRect(x: 30, y: view.height/2 - 10, width: view.width-60, height: 52)
+        adminToolsButton.addTarget(self, action: #selector(didTapAdminButton), for: .touchUpInside)
+        adminToolsButton.isHidden = false
+    }
+    
+    @objc private func didTapAdminButton() {
+        let vc = AdminToolsViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     private func checkBuyedBefore() {
@@ -271,6 +303,8 @@ class ProductsViewController: UIViewController {
                     })
                 } else {
                     print("Program alınmamış")
+                    self.hide()
+                    self.noResultLabel.text = "Program Satın Alınmamış"
                 }
             })
         } else {
@@ -327,6 +361,11 @@ class ProductsViewController: UIViewController {
     }
     
     private func isProgramFinished() {
+        if ProductsViewController.ongProduct.lastRecord?.succesRate == 0 {
+            seeRecordsButton.isEnabled = false
+        } else {
+            seeRecordsButton.isEnabled = true
+        }
         if ProductsViewController.ongProduct.lastRecord?.leftDays == 0 {
             todaysButton.isEnabled = false
             todaysReportButton.isEnabled = false

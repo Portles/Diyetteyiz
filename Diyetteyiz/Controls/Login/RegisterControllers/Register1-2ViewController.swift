@@ -139,6 +139,13 @@ class Register1_2ViewController: UIViewController {
         return label
     }()
     
+    private let warnLabel: UILabel = {
+       let label = UILabel()
+        label.text = ""
+        label.textColor = .systemRed
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -169,6 +176,7 @@ class Register1_2ViewController: UIViewController {
         view.addSubview(radioButton)
         view.addSubview(radiobuttonLabel)
         view.addSubview(continueButton)
+        view.addSubview(warnLabel)
     }
     
     @objc func dismissKeyboard() {
@@ -193,6 +201,7 @@ class Register1_2ViewController: UIViewController {
         radioButton.frame = CGRect(x: 30, y: repassField.top + 100, width: 52, height: 52)
         radiobuttonLabel.frame = CGRect(x: radioButton.right+10, y: repassField.top+100, width: 300, height: 52)
         continueButton.frame = CGRect(x: 30, y: radiobuttonLabel.bottom + 52, width: view.width-60, height: 52)
+        warnLabel.frame = CGRect(x: 30, y: continueButton.bottom + 5, width: view.width, height: 52)
         
         UIView.configureHeaderView(with: headerView)
     }
@@ -206,16 +215,26 @@ class Register1_2ViewController: UIViewController {
             isCheckedLegal = false
         }
     }
+    
+    private func presentWarnLabel() {
+        warnLabel.text = "Lütfen girdileri kontrol edin!"
+    }
 
     @objc private func didTapContinueButton() {
-        
         nameField.resignFirstResponder()
         surnameField.resignFirstResponder()
         emailField.resignFirstResponder()
         passField.resignFirstResponder()
         repassField.resignFirstResponder()
         
-        guard let gender=self.gender ,let isPersonalInfoHidden = self.isPersonalInfoHidden ,let fat = self.fat ,let height = self.height ,let isCheckedLegal = self.isCheckedLegal ,let name=nameField.text, let surname=surnameField.text, let email=emailField.text, let pass=passField.text, let repass=repassField.text, pass == repass, !name.isEmpty, !surname.isEmpty, !email.isEmpty, !pass.isEmpty, !repass.isEmpty else {
+        warnLabel.text = ""
+        
+        guard let emailCheck = emailField.text, !emailCheck.contains("*"),!emailCheck.contains("/"),!emailCheck.contains("<"), let name=nameField.text, let surname=surnameField.text, !name.contains("@"), !surname.contains("@"), let pass=passField.text, let repass=repassField.text, !(pass.count <= 3), !(repass.count <= 3) else {
+            presentWarnLabel()
+            return
+        }
+        
+        guard let gender=self.gender ,let isPersonalInfoHidden = self.isPersonalInfoHidden ,let fat = self.fat ,let height = self.height ,let isCheckedLegal = self.isCheckedLegal ,let name=nameField.text, let surname=surnameField.text, let email=emailField.text, let pass=passField.text, let repass=repassField.text, pass == repass, !name.isEmpty, !surname.isEmpty, !email.isEmpty, !pass.isEmpty, !repass.isEmpty, radioButton.isSelected else {
             return
         }
         

@@ -96,6 +96,10 @@ class ForgotPasswordViewController: UIViewController {
     }
     
     @objc private func didTapSendButton() {
+        guard let emaile = emailField.text, !emaile.isEmpty, emaile.count > 5 else {
+            return
+        }
+        
         guard let email = emailField.text, !email.isEmpty, email.count > 5 else {
             ForgotPassAlet()
             return

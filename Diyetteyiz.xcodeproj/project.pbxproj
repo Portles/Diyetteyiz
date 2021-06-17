@@ -18,6 +18,7 @@
 		CA28FB2625E6ABE40020FC32 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA28FB2525E6ABE40020FC32 /* Extensions.swift */; };
 		CA28FB2B25E6DF1C0020FC32 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA28FB2A25E6DF1C0020FC32 /* ForgotPasswordViewController.swift */; };
 		CA2EAEFF25FCC9CF0069CAE6 /* DietitianHomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2EAEFE25FCC9CF0069CAE6 /* DietitianHomeCollectionViewCell.swift */; };
+		CA43FE0A264C6C02000A7A56 /* AdminToolsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA43FE09264C6C01000A7A56 /* AdminToolsViewController.swift */; };
 		CA46DC48260FCB29006ACA62 /* TodaysMealViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA46DC47260FCB29006ACA62 /* TodaysMealViewController.swift */; };
 		CA46DC4D260FCB41006ACA62 /* CheckMealViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA46DC4C260FCB41006ACA62 /* CheckMealViewController.swift */; };
 		CA46DC52260FCB55006ACA62 /* ProductRecordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA46DC51260FCB55006ACA62 /* ProductRecordsViewController.swift */; };
@@ -99,6 +100,7 @@
 		CA28FB2525E6ABE40020FC32 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		CA28FB2A25E6DF1C0020FC32 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		CA2EAEFE25FCC9CF0069CAE6 /* DietitianHomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DietitianHomeCollectionViewCell.swift; sourceTree = "<group>"; };
+		CA43FE09264C6C01000A7A56 /* AdminToolsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminToolsViewController.swift; sourceTree = "<group>"; };
 		CA46DC47260FCB29006ACA62 /* TodaysMealViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodaysMealViewController.swift; sourceTree = "<group>"; };
 		CA46DC4C260FCB41006ACA62 /* CheckMealViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMealViewController.swift; sourceTree = "<group>"; };
 		CA46DC51260FCB55006ACA62 /* ProductRecordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductRecordsViewController.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 				CAFCF79F25FE7B9C0066C2F9 /* SearchProfileViewController.swift */,
 				CAFCF7B625FFF1330066C2F9 /* MenuViewController.swift */,
 				CA46DC56260FCB5A006ACA62 /* ProductOperations */,
+				CA43FE09264C6C01000A7A56 /* AdminToolsViewController.swift */,
 			);
 			path = Controls;
 			sourceTree = "<group>";
@@ -687,6 +690,7 @@
 				CA28FB2B25E6DF1C0020FC32 /* ForgotPasswordViewController.swift in Sources */,
 				CA46DC4D260FCB41006ACA62 /* CheckMealViewController.swift in Sources */,
 				CA6C774625E85EC4008E401E /* Register1-1ViewController.swift in Sources */,
+				CA43FE0A264C6C02000A7A56 /* AdminToolsViewController.swift in Sources */,
 				CAFCF7AD25FEA9450066C2F9 /* HomeMenusCollectionViewCell.swift in Sources */,
 				CA6C774B25E85ECE008E401E /* Register1-2ViewController.swift in Sources */,
 				CAA7E19D25F40C4500281DC4 /* NotificationTableViewCell.swift in Sources */,

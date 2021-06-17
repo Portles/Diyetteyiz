@@ -21,6 +21,14 @@ class Register1_1ViewController: UIViewController {
         return label
     }()
     
+    private let warnLabel: UILabel = {
+        let label = UILabel()
+        label.text = ""
+        label.font = UIFont.systemFont(ofSize: 24.0)
+        label.textColor = .systemRed
+        return label
+    }()
+    
     private let headerView: UIView = {
         let header = UIView()
         header.layer.masksToBounds = true
@@ -116,6 +124,7 @@ class Register1_1ViewController: UIViewController {
         view.addSubview(radioButton)
         view.addSubview(continueButton)
         view.addSubview(radiobuttonLabel)
+        view.addSubview(warnLabel)
     }
     
     @objc func dismissKeyboard() {
@@ -133,8 +142,18 @@ class Register1_1ViewController: UIViewController {
         
     }
     
+    private func presentWarnLabel() {
+        warnLabel.text = "Lütfen sayısal girdi yapın!"
+    }
+    
     @objc private func didTapContinueButton() {
+        warnLabel.text = ""
         guard let weight = weightField.text,let height1 = heightField.text, !weight.isEmpty, !height1.isEmpty else {
+            presentWarnLabel()
+            return
+        }
+        
+        guard let weight = weightField.text,let height1 = heightField.text, !weight.isEmpty, !height1.isEmpty, weight.count <= 6, height1.count <= 6 else {
             return
         }
         fat = Decimal(string: weight) ?? 0
@@ -161,6 +180,7 @@ class Register1_1ViewController: UIViewController {
         radioButton.frame = CGRect(x: 30, y: weightField.top + 100, width: 52, height: 52)
         radiobuttonLabel.frame = CGRect(x: radioButton.right+10, y: weightField.top+100, width: 300, height: 52)
         continueButton.frame = CGRect(x: 30, y: radioButton.top + 100, width: view.width-60, height: 52)
+        warnLabel.frame = CGRect(x: 30, y: continueButton.bottom + 5, width: view.width, height: 52)
         
         UIView.configureHeaderView(with: headerView)
     }

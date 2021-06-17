@@ -899,6 +899,116 @@ extension DatabaseManager {
         })
     }
     
+    public func getAdminData(completion: @escaping (Result<adminData, Error>) -> Void) {
+        var data = adminData()
+        database.child("users").observeSingleEvent(of: .value, with: { snapshot in
+            if let userProductData = snapshot.value as? [[String: Any]] {
+                let userCount = String(userProductData.count)
+                data.totalUsers = userCount
+                
+                self.database.child("dietitians").observeSingleEvent(of: .value, with: { snapshot in
+                    if let dietitianData = snapshot.value as? [[String: Any]] {
+                        let dietitianCount = String(dietitianData.count)
+                        data.totalDietitians = dietitianCount
+                        
+                        self.database.child("menus").observeSingleEvent(of: .value, with: { snapshot in
+                            if let menusData = snapshot.value as? [[String: Any]] {
+                                let menusCount = String(menusData.count)
+                                data.totalMenus = menusCount
+                                
+                                self.database.child("ongoingPrograms").observeSingleEvent(of: .value, with: { snapshot in
+                                    if let productsData = snapshot.value as? [String: Any] {
+                                        let productsCount = String(productsData.count)
+                                        data.totalDietInProgress = productsCount
+                                        completion(.success(data))
+                                    } else {
+                                        completion(.failure(DatabaseError.dataCekmeHatasi))
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    }
+    
+    //MARK: - COMPLATE DİET
+    public func complateProgram(userEmail: String, completion: @escaping (Bool) -> Void) {
+        let safeMail = DatabaseManager.safeEmail(emailAdress: userEmail)
+        let ref = database.child(safeMail)
+        ref.setValue(["ongoingProduct": nil])
+        ref.setValue(["canBuyProgram": true])
+        completion(true)
+        
+    }
+    
+    // MARK: - DELETE USER
+    public func deleteUser(userEmail: String, completion: @escaping (Bool) -> Void) {
+        
+        let safeMeil = DatabaseManager.safeEmail(emailAdress: userEmail)
+        
+        print("Kullanıcı silme işlemi başladı: \(userEmail)")
+        
+        let ref = database.child("users")
+        ref.observeSingleEvent(of: .value) { snapshot in
+            if var users = snapshot.value as? [[String: Any]] {
+                var positionToRemove = 0
+                for user in users {
+                    if let id = user["email"] as? String,
+                        id == safeMeil {
+                        print("Silinecek konuşma bulundı")
+                        break
+                    }
+                    positionToRemove += 1
+                }
+                users.remove(at: positionToRemove)
+                ref.setValue(users, withCompletionBlock: { error, _ in
+                    guard error == nil else {
+                        completion(false)
+                        print("Array'e yeni kişi listesi yazılamadı.")
+                        return
+                    }
+                    print("Seçilen kullanıcı silindi.")
+                    completion(true)
+                })
+            }
+        }
+    }
+    
+    // MARK: - DELETE DIETETIAN
+    public func deleteDietitian(dietitianEmail: String, completion: @escaping (Bool) -> Void) {
+        
+        let safeMeil = DatabaseManager.safeEmail(emailAdress: dietitianEmail)
+        
+        print("Diyetisyen silme işlemi başladı: \(dietitianEmail)")
+        
+        let ref = database.child("dietitians")
+        ref.observeSingleEvent(of: .value) { snapshot in
+            if var dietitians = snapshot.value as? [[String: Any]] {
+                var positionToRemove = 0
+                for dietitian in dietitians {
+                    if let id = dietitian["email"] as? String,
+                        id == safeMeil {
+                        print("Silinecek diyetisyen bulundı")
+                        break
+                    }
+                    positionToRemove += 1
+                }
+                dietitians.remove(at: positionToRemove)
+                ref.setValue(dietitians, withCompletionBlock: { error, _ in
+                    guard error == nil else {
+                        completion(false)
+                        print("Array'e yeni diyetisyen listesi yazılamadı.")
+                        return
+                    }
+                    print("Seçilen diyetisyen silindi.")
+                    completion(true)
+                })
+            }
+        }
+    }
+    
     public static let dateFormatter: DateFormatter = {
         let frmttr = DateFormatter()
         frmttr.dateStyle = .medium

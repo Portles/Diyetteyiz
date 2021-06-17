@@ -34,7 +34,7 @@ class TodaysRecordViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        navigationItem.title = String((ProductsViewController.productData.daysCount ?? 0) - 1) + ". Gün Kaydı"
+        navigationItem.title = String((ProductsViewController.productData.daysCount ?? 0) - (ProductsViewController.ongProduct.lastRecord?.leftDays)!) + ". Gün Kaydı"
         
         addSubviews()
         setDelegates()

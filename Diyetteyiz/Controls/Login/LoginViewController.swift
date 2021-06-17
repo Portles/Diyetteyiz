@@ -161,6 +161,10 @@ class LoginViewController: UIViewController {
         emailField.resignFirstResponder()
         passField.resignFirstResponder()
         
+        guard let passo = passField.text, !passo.isEmpty, passo.count >= 6 else {
+            return
+        }
+        
         guard let email = emailField.text, let pass = passField.text,
         !email.isEmpty, !pass.isEmpty, pass.count >= 6 else {
             alertLogError()
@@ -180,27 +184,39 @@ class LoginViewController: UIViewController {
             
             guard let result = authResult, error == nil else {
                 print("Hatalı giriş: \(email)")
+                strongSelf.presentLogError()
                 return
             }
             let user = result.user
             
             let safmeail = DatabaseManager.safeEmail(emailAdress: email)
             DatabaseManager.shared.getDataFor(path: safmeail, comletion: { result in
+                UserDefaults.standard.setValue(3, forKey: "permission")
                 switch result {
                 case .success(let data):
+                    
                     guard let userData = data as? [String: Any],
                         let name = userData["name"] as? String else {
+                        if email.contains("admin@diyetteyiz.com") {
+                            UserDefaults.standard.set("admin", forKey: "name")
+                            UserDefaults.standard.setValue("admin@diyetteyiz.com", forKey: "email")
+                        }
                         return
                     }
                     UserDefaults.standard.set("\(name)", forKey: "name")
                     UserDefaults.standard.setValue("\(email)", forKey: "email")
-                    if email.contains("@diyetteyiz.com") {
+                    if email.contains("admin@diyetteyiz.com") {
+                        UserDefaults.standard.setValue(3, forKey: "permission")
+                        UserDefaults.standard.set("admin", forKey: "name")
+                        UserDefaults.standard.setValue("admin@diyetteyiz.com", forKey: "email")
+                    } else if email.contains("@diyetteyiz.com") {
                         UserDefaults.standard.setValue(2, forKey: "permission")
                     } else {
                         UserDefaults.standard.setValue(1, forKey: "permission")
                     }
                 case .failure(let error):
                     print("Data okunamadı: \(error)")
+                    
                 }
             })
             
@@ -237,6 +253,12 @@ class LoginViewController: UIViewController {
         super.viewDidLayoutSubviews()
         
         setFrames()
+    }
+    
+    private func presentLogError() {
+        let alert =  UIAlertController(title: "Giriş Hatası", message: "Giriş bilgileriniz hatalı.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Tamam", style: .destructive, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
     
     private func setFrames() {

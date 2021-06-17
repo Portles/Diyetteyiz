@@ -48,6 +48,13 @@ class ProfileViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         hasFetched = false
+        clear()
+    }
+    
+    private func clear() {
+        tableView.isHidden = true
+        tableView.dataSource = nil
+        tableView.delegate = nil
     }
     
     private let profilePhoto: UIImageView = {
@@ -184,27 +191,29 @@ class ProfileViewController: UIViewController {
         
         if UserDefaults.standard.integer(forKey: "permission") == 1 {
             getUserData(query: email)
-        } else {
+        } else if UserDefaults.standard.integer(forKey: "permission") == 2 {
             getDietitianData(query: email)
+        } else if UserDefaults.standard.integer(forKey: "permission") == 3 {
+            fullName.text = "Admin"
         }
     }
     
     private func getDietitianData(query: String) {
-            dietitianData.removeAll()
-            if hasFetched {
-                filterDietitian(with: query)
-            }else{
-                DatabaseManager.shared.getAllDietitians(completion: { [weak self]result in
-                    switch result {
-                    case .success(let dietitianCollection):
-                        self?.hasFetched = true
-                        self?.dietitians = dietitianCollection
-                        self?.filterDietitian(with: query)
-                    case .failure(let error):
-                        print("Diyetisyen bilgilerine erişilemedi: \(error)")
-                    }
-                })
-            }
+        dietitianData.removeAll()
+        if hasFetched {
+            filterDietitian(with: query)
+        }else{
+            DatabaseManager.shared.getAllDietitians(completion: { [weak self]result in
+                switch result {
+                case .success(let dietitianCollection):
+                    self?.hasFetched = true
+                    self?.dietitians = dietitianCollection
+                    self?.filterDietitian(with: query)
+                case .failure(let error):
+                    print("Diyetisyen bilgilerine erişilemedi: \(error)")
+                }
+            })
+        }
     }
     func filterDietitian(with term: String) {
         guard let currentUserEmail = UserDefaults.standard.value(forKey: "email") as? String, hasFetched else {
@@ -216,7 +225,7 @@ class ProfileViewController: UIViewController {
         let results: [DietitianViewModel] = dietitians.filter({
             guard let email = $0["email"],
                   email as! String == safeMaille else {
-                    return false
+                return false
             }
             
             return (email as AnyObject).hasPrefix(safeMaille.lowercased())
@@ -234,7 +243,7 @@ class ProfileViewController: UIViewController {
             return DietitianViewModel(name: name as? String, surname: surName as? String, bio: bio as? String, starRate: starRate as? Double, gender: gender as? String)
         })
         self.dietitianData = results
-
+        
         fullName.text = dietitianData[0].name! + " " + dietitianData[0].surname!
         bio.text = dietitianData[0].bio
         starRate.text = "Yıldız: " + String(dietitianData[0].starRate!) + "/5.0"
@@ -265,21 +274,21 @@ class ProfileViewController: UIViewController {
     }
     
     private func getUserData(query: String) {
-            data.removeAll()
-            if hasFetched {
-                filterUser(with: query)
-            }else{
-                DatabaseManager.shared.getAllUsers(completion: { [weak self]result in
-                    switch result {
-                    case .success(let usersCollection):
-                        self?.hasFetched = true
-                        self?.users = usersCollection
-                        self?.filterUser(with: query)
-                    case .failure(let error):
-                        print("Kişi bilgilerine erişilemedi: \(error)")
-                    }
-                })
-            }
+        data.removeAll()
+        if hasFetched {
+            filterUser(with: query)
+        }else{
+            DatabaseManager.shared.getAllUsers(completion: { [weak self]result in
+                switch result {
+                case .success(let usersCollection):
+                    self?.hasFetched = true
+                    self?.users = usersCollection
+                    self?.filterUser(with: query)
+                case .failure(let error):
+                    print("Kişi bilgilerine erişilemedi: \(error)")
+                }
+            })
+        }
     }
     func filterUser(with term: String) {
         guard let currentUserEmail = UserDefaults.standard.value(forKey: "email") as? String, hasFetched else {
@@ -291,7 +300,7 @@ class ProfileViewController: UIViewController {
         let results: [ProfileViewModel] = users.filter({
             guard let email = $0["email"],
                   email as! String == safeMaille else {
-                    return false
+                return false
             }
             
             return (email as AnyObject).hasPrefix(safeMaille.lowercased())
@@ -311,7 +320,7 @@ class ProfileViewController: UIViewController {
             return ProfileViewModel(name: name as? String, surname: surName as? String, bio: bio as? String, starRate: starRate as? Double, height: height as? String, fat: fat as? String, gender: gender as? String)
         })
         self.data = results
-
+        
         fullName.text = data[0].name! + " " + data[0].surname!
         bio.text = data[0].bio
         starRate.text = "Yıldız: " + String(data[0].starRate!) + "/5.0"
@@ -347,7 +356,7 @@ class ProfileViewController: UIViewController {
             
             return (email as AnyObject).hasPrefix(dietitian.lowercased())
         }).compactMap({
-            guard let header = $0["header"] as? String, let info = $0["info"] as? String , let price = $0["price"] as? String , let dietitianBind = $0["dietitianBind"] as? String , let days = $0["days"] as? Int , let headerPicLoc = $0["headerPicLoc"] as? String else {
+            guard let header = $0["header"] as? String, let info = $0["info"] as? String , let price = $0["price"] as? String , let dietitianBind = $0["dietitianBind"] as? String , let days = $0["days"] as? Int , let headerPicLoc = $0["photoLoc"] as? String else {
                 return nil
             }
             
@@ -357,7 +366,7 @@ class ProfileViewController: UIViewController {
         
         tableView.reloadData()
     }
-
+    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()

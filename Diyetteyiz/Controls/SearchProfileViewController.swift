@@ -32,6 +32,7 @@ class SearchProfileViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         hasFetched = false
+        adminDeleteButton.removeFromSuperview()
     }
     
     private let profilePhoto: UIImageView = {
@@ -95,6 +96,17 @@ class SearchProfileViewController: UIViewController {
         return tableView
     }()
     
+    private let adminDeleteButton: UIButton = {
+       let button = UIButton()
+        button.setTitle("Kişiyi sil", for: .normal)
+        button.backgroundColor = .systemRed
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 12
+        button.layer.masksToBounds = true
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -102,15 +114,61 @@ class SearchProfileViewController: UIViewController {
         
         addSubviews()
         
+        let isAdmin = UserDefaults.standard.integer(forKey: "permission")
+        
         if email?.contains("_diyetteyiz-com") == true {
             setDelegates()
             getDietitianData(query: email!)
+            
+            if isAdmin == 3 {
+                activateDeleteDietitianButton()
+            }
         } else {
             getUserData(query: email!)
+            
+            if isAdmin == 3 {
+                activateDeleteUserButton()
+            }
         }
         
         getPP()
         setButtonActions()
+    }
+    
+    private func activateDeleteDietitianButton() {
+        view.addSubview(adminDeleteButton)
+        adminDeleteButton.addTarget(self, action: #selector(deleteDietetianButtonAction), for: .touchUpInside)
+        adminDeleteButton.frame = CGRect(x: 30, y: 95, width: view.width - 60, height: 52)
+    }
+    
+    @objc private func deleteDietetianButtonAction() {
+        DatabaseManager.shared.deleteDietitian(dietitianEmail: self.email!, completion: {result in
+            if result == true {
+                self.deleteSuccessAlert()
+            }
+        })
+    }
+    
+    private func activateDeleteUserButton() {
+        view.addSubview(adminDeleteButton)
+        adminDeleteButton.addTarget(self, action: #selector(deleteUserButtonAction), for: .touchUpInside)
+        adminDeleteButton.frame = CGRect(x: 30, y: 95, width: view.width - 60, height: 52)
+    }
+    
+    @objc private func deleteUserButtonAction() {
+        DatabaseManager.shared.deleteUser(userEmail: self.email!, completion: {result in
+            if result == true {
+                self.deleteSuccessAlert()
+            }
+        })
+    }
+    
+    private func deleteSuccessAlert() {
+        let alert = UIAlertController(title: "Başarılı", message: "Silme işlemi başarı ile tamamlandı", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Tamam", style: .destructive, handler: nil))
+        present(alert, animated: true, completion: nil)
+        
+        navigationController?.popViewController(animated: true)
     }
     
     private func setDelegates() {
@@ -252,7 +310,7 @@ class SearchProfileViewController: UIViewController {
             
             return (email as AnyObject).hasPrefix(dietitian.lowercased())
         }).compactMap({
-            guard let header = $0["header"] as? String, let info = $0["info"] as? String , let price = $0["price"] as? String , let dietitianBind = $0["dietitianBind"] as? String , let days = $0["days"] as? Int , let headerPicLoc = $0["headerPicLoc"] as? String else {
+            guard let header = $0["header"] as? String, let info = $0["info"] as? String , let price = $0["price"] as? String , let dietitianBind = $0["dietitianBind"] as? String , let days = $0["days"] as? Int , let headerPicLoc = $0["photoLoc"] as? String else {
                 return nil
             }
             
@@ -329,6 +387,13 @@ class SearchProfileViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func openMenu(_ model: MenuViewModel){
+        let vc = MenuViewController(with: model.dietitianBind, id: model.header, picLoc: model.headerPicLoc)
+        vc.title = "Menü"
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
 }
 
 extension SearchProfileViewController: UITableViewDelegate, UITableViewDataSource {
@@ -341,6 +406,12 @@ extension SearchProfileViewController: UITableViewDelegate, UITableViewDataSourc
         let cell = tableView.dequeueReusableCell(withIdentifier: DietitianProfileMenusTableViewCell.identifier, for: indexPath) as! DietitianProfileMenusTableViewCell
         cell.configure(with: model)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let model = menuResults[indexPath.row]
+        openMenu(model)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

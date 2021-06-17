@@ -287,7 +287,7 @@ extension SearchViewController: UISearchBarDelegate {
             
             return (name as AnyObject).hasPrefix(term.lowercased())
         }).compactMap({
-            guard let header = $0["header"] as? String, let info = $0["info"] as? String , let price = $0["price"] as? String , let dietitianBind = $0["dietitianBind"] as? String , let days = $0["days"] as? Int , let headerPicLoc = $0["headerPicLoc"] as? String else {
+            guard let header = $0["header"] as? String, let info = $0["info"] as? String , let price = $0["price"] as? String , let dietitianBind = $0["dietitianBind"] as? String , let days = $0["days"] as? Int , let headerPicLoc = $0["photoLoc"] as? String else {
                 return nil
             }
             
